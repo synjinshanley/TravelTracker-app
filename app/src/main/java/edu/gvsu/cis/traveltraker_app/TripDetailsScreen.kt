@@ -20,7 +20,7 @@ import edu.gvsu.cis.traveltraker_app.ui.theme.TravelTrakerappTheme
 
 @Composable
 fun TripDetailsScreen(modifier: Modifier = Modifier) {
-    Column(Modifier.fillMaxSize().background(Color.LightGray), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(Modifier.fillMaxSize().background(color = Color(red = 175, green = 40, blue = 60, alpha = 255)), horizontalAlignment = Alignment.CenterHorizontally) {
         Row(modifier.fillMaxWidth().padding(horizontal = 10.dp), horizontalArrangement = Arrangement.SpaceBetween) {
             Button(
                 onClick = {
@@ -35,7 +35,7 @@ fun TripDetailsScreen(modifier: Modifier = Modifier) {
                 Text("Edit")
             }
         }
-        Box(Modifier.fillMaxSize().padding(10.dp).background(color = Color(75, 90, 200, 255))) {
+        Box(Modifier.fillMaxSize().padding(10.dp).background(color = Color(40, 120, 240, 255))) {
             Column() {
                 Row() {
                     Text("May 2024 Trip Details:", Modifier.padding(10.dp))
