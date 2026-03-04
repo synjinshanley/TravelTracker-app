@@ -37,12 +37,6 @@ fun PlanTripScreen(modifier: Modifier = Modifier) {
                 }) {
                 Text("Return")
             }
-            Button(
-                onClick = {
-
-                }) {
-                Text("Edit")
-            }
         }
         Box(Modifier.fillMaxWidth().padding(10.dp).background(color = Color(40, 120, 240, 255))) {
             Column() {
@@ -94,7 +88,7 @@ fun PlanTripScreen(modifier: Modifier = Modifier) {
                     onClick = {
 
                     }) {
-                    Text("Return Home")
+                    Text("Finalize")
                 }
             }
         }
