@@ -9,7 +9,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,22 +24,28 @@ import edu.gvsu.cis.traveltraker_app.ui.theme.TravelTrakerappTheme
 
 @Composable
 fun TripDetailsScreen(modifier: Modifier = Modifier) {
-    Column(Modifier.fillMaxSize().background(color = Color(red = 175, green = 40, blue = 60, alpha = 255)), horizontalAlignment = Alignment.CenterHorizontally) {
-        Row(modifier.fillMaxWidth().padding(horizontal = 10.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+    Column(Modifier.fillMaxSize().background(color = Color.LightGray), horizontalAlignment = Alignment.CenterHorizontally) {
+        Row(modifier.fillMaxWidth().padding(horizontal = 15.dp, vertical = 15.dp), horizontalArrangement = Arrangement.SpaceBetween) {
             Button(
                 onClick = {
 
-                }) {
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(2, 38, 88))
+            ) {
                 Text("Return")
             }
             Button(
                 onClick = {
 
-                }) {
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(2, 38, 88))
+            ) {
                 Text("Edit")
             }
         }
-        Box(Modifier.fillMaxSize().padding(10.dp).background(color = Color(40, 120, 240, 255))) {
+        Card(Modifier.fillMaxSize().padding(15.dp), shape = RoundedCornerShape(12.dp), colors = CardDefaults.cardColors(
+            containerColor = Color.Gray // Set the color here instead
+        )) {
             Column() {
                 Row() {
                     Text("May 2024 Trip Details:", Modifier.padding(10.dp))

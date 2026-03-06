@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.sp
 import edu.gvsu.cis.traveltraker_app.ui.theme.TravelTrakerappTheme
 
 @Composable
-fun LoginScreen(name: String, modifier: Modifier = Modifier) {
+fun LoginScreen(modifier: Modifier = Modifier, onCreateNewAccount: () -> Unit, onGuestLogin: () -> Unit, onLogin: () -> Unit) {
 
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -69,6 +69,7 @@ fun LoginScreen(name: String, modifier: Modifier = Modifier) {
             modifier = Modifier
                 .padding(top = 80.dp)
                 .clickable {
+                    onGuestLogin()
                 },
             color = Color(2, 38, 88),
             fontWeight = FontWeight.Bold
@@ -79,16 +80,16 @@ fun LoginScreen(name: String, modifier: Modifier = Modifier) {
             modifier = Modifier
                 .padding(top = 20.dp)
                 .clickable {
-
+                    onCreateNewAccount()
                 },
             color = Color(2, 38, 88),
             fontWeight = FontWeight.Bold
         )
 
-        Button(onClick = { /* Handle login button click */},
-            // 2. Add fillMaxWidth to the modifier chain
+        Button(onClick = { onLogin()},
+
             modifier = Modifier
-                .fillMaxWidth(0.33f) // This makes the button 1/3 of the screen width
+                .fillMaxWidth(0.33f)
                 .padding(top = 80.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(2, 38, 88))) {
@@ -103,6 +104,6 @@ fun LoginScreen(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun LoginScreenPreview() {
     TravelTrakerappTheme {
-        LoginScreen("Android")
+        LoginScreen(onCreateNewAccount = {}, onGuestLogin = {}, onLogin = {})
     }
 }

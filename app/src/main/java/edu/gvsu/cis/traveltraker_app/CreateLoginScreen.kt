@@ -2,8 +2,11 @@ package edu.gvsu.cis.traveltraker_app
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -25,7 +28,7 @@ import androidx.compose.ui.unit.sp
 import edu.gvsu.cis.traveltraker_app.ui.theme.TravelTrakerappTheme
 
 @Composable
-fun CreateLoginScreen(name: String, modifier: Modifier = Modifier) {
+fun CreateLoginScreen(modifier: Modifier = Modifier, onCreateLogin: () -> Unit, onBack: () -> Unit) {
 
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -83,17 +86,31 @@ fun CreateLoginScreen(name: String, modifier: Modifier = Modifier) {
             singleLine = true,
             modifier = Modifier.padding(top = 20.dp)
         )
-
-        Button(
-            onClick = { /* Handle login button click */ },
-            modifier = Modifier.padding(top = 80.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(2, 38, 88) // Sets the background color
-                // You can also set the text color if needed:
-                // contentColor = Color.White
-            )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp, start = 32.dp, end = 32.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text("Create Login")
+            Button(
+                onClick = { onCreateLogin() },
+                modifier = Modifier.weight(1f).padding(top = 30.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(2, 38, 88) // Sets the background color
+
+                )
+            ) {
+                Text("Create Login")
+            }
+            Button(
+                onClick = { onBack()},
+                modifier = Modifier.weight(1f).padding(top = 30.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(2, 38, 88) // Sets the background color
+                )
+            ) {
+                Text("Back")
+            }
         }
 
     }
@@ -103,6 +120,6 @@ fun CreateLoginScreen(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun CreateLoginScreenPreview() {
     TravelTrakerappTheme {
-        CreateLoginScreen("Android")
+        CreateLoginScreen(onCreateLogin = {}, onBack = {})
     }
 }

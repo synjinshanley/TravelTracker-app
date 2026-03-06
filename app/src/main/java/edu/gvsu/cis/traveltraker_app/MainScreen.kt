@@ -17,6 +17,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
+import edu.gvsu.cis.traveltraker_app.ui.theme.TravelTrakerappTheme
 
 
 @Composable
@@ -42,9 +44,11 @@ fun MainScreen(
                 .align(Alignment.TopEnd)
                 .padding(16.dp),
             shape = CircleShape,
-            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp)
+            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(2, 38, 88))
         ) {
-            Text("U")
+            Text("Profile")
         }
 
         // Bottom bar
@@ -52,7 +56,7 @@ fun MainScreen(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth(),
-            color = Color(0xFF1C1C1E)
+            color = Color.LightGray
         ) {
             Row(
                 modifier = Modifier
@@ -65,9 +69,7 @@ fun MainScreen(
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF2C2C2E), // slightly lighter than bar
-                        contentColor = Color.White
-                    )
+                        containerColor = Color(2, 38, 88))
                 ) {
                     Text("Plan Trip")
                 }
@@ -77,13 +79,19 @@ fun MainScreen(
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF2C2C2E),
-                        contentColor = Color.White
-                    )
+                        containerColor = Color(2, 38, 88))
                 ) {
                     Text("History")
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MainScreenPreview() {
+    TravelTrakerappTheme {
+        MainScreen(onOpenProfile = {}, onOpenPlanTrip = {}, onOpenHistory = {})
     }
 }
