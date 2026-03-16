@@ -45,6 +45,14 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
+                    composable<Route.PlanTrip> {
+                        PlanTripScreen(
+                            onBack = {
+                                nc.popBackStack()
+                            }
+                        )
+                    }
+
                     composable<Route.History> {
 
                         val fakeTrips = listOf(
