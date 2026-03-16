@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -29,19 +30,21 @@ import edu.gvsu.cis.traveltraker_app.ui.theme.TravelTrakerappTheme
 @Composable
 fun PlanTripScreen(modifier: Modifier = Modifier) {
     var startingLocation by remember { mutableStateOf("") }
-    Column(Modifier.fillMaxSize().background(color = Color(red = 175, green = 40, blue = 60, alpha = 255)), horizontalAlignment = Alignment.CenterHorizontally) {
-        Row(modifier.fillMaxWidth().padding(horizontal = 10.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+    Column(Modifier.fillMaxSize().background(color = Color.LightGray), horizontalAlignment = Alignment.CenterHorizontally) {
+        Row(modifier.fillMaxWidth().padding(top = 15.dp, start = 10.dp), horizontalArrangement = Arrangement.SpaceBetween) {
             Button(
                 onClick = {
 
-                }) {
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(2, 38, 88))) {
                 Text("Return")
             }
         }
-        Box(Modifier.fillMaxWidth().padding(10.dp).background(color = Color(40, 120, 240, 255))) {
+        Box(Modifier.fillMaxWidth().padding(10.dp).background(Color(0xFF2C2C2E))) {
             Column() {
                 Row() {
-                    Text("Where are we starting?", Modifier.padding(10.dp))
+                    Text("Where are we starting?", Modifier.padding(10.dp), color = Color.White)
                 }
                 Row() {
                     OutlinedTextField(
@@ -52,10 +55,10 @@ fun PlanTripScreen(modifier: Modifier = Modifier) {
                 }
             }
         }
-        Box(Modifier.fillMaxWidth().padding(10.dp).background(color = Color(40, 120, 240, 255))) {
+        Box(Modifier.fillMaxWidth().padding(10.dp).background(Color(0xFF2C2C2E))) {
             Column() {
                 Row() {
-                    Text("Where are we going?", Modifier.padding(10.dp))
+                    Text("Where are we going?", Modifier.padding(10.dp), color = Color.White)
                 }
                 Row() {
                     OutlinedTextField(
@@ -65,7 +68,7 @@ fun PlanTripScreen(modifier: Modifier = Modifier) {
                     )
                 }
                 Row() {
-                    Text("How will we get there?", Modifier.padding(10.dp))
+                    Text("How will we get there?", Modifier.padding(10.dp), color = Color.White)
                 }
                 Row() {
                     OutlinedTextField(
@@ -81,13 +84,17 @@ fun PlanTripScreen(modifier: Modifier = Modifier) {
                 Button(
                     onClick = {
 
-                    }) {
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(2, 38, 88))) {
                     Text("Add Stop")
                 }
                 Button(
                     onClick = {
 
-                    }) {
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(2, 38, 88))) {
                     Text("Finalize")
                 }
             }
