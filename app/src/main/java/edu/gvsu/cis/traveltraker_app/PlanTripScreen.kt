@@ -27,13 +27,13 @@ import androidx.compose.ui.unit.dp
 import edu.gvsu.cis.traveltraker_app.ui.theme.TravelTrakerappTheme
 
 @Composable
-fun PlanTripScreen(modifier: Modifier = Modifier) {
+fun PlanTripScreen(modifier: Modifier = Modifier, onBack: () -> Unit) {
     var startingLocation by remember { mutableStateOf("") }
     Column(Modifier.fillMaxSize().background(color = Color(red = 175, green = 40, blue = 60, alpha = 255)), horizontalAlignment = Alignment.CenterHorizontally) {
         Row(modifier.fillMaxWidth().padding(horizontal = 10.dp), horizontalArrangement = Arrangement.SpaceBetween) {
             Button(
                 onClick = {
-
+                    onBack()
                 }) {
                 Text("Return")
             }
@@ -86,7 +86,7 @@ fun PlanTripScreen(modifier: Modifier = Modifier) {
                 }
                 Button(
                     onClick = {
-
+                        onBack()
                     }) {
                     Text("Finalize")
                 }
@@ -99,6 +99,6 @@ fun PlanTripScreen(modifier: Modifier = Modifier) {
 @Composable
 fun PlanTripScreenPreview() {
     TravelTrakerappTheme() {
-        PlanTripScreen()
+        //PlanTripScreen()
     }
 }
