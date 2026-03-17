@@ -84,6 +84,25 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     }
+
+                    composable<Route.Profile> {
+                        ProfileScreen(onChangeProfile = {nc.navigate(Route.Login)}, onHome = {nc.popBackStack(route = Route.Main, inclusive = false)})
+                    }
+
+                    composable<Route.CreateLogin> {
+                        CreateLoginScreen(
+                            onCreateLogin = {nc.navigate(Route.Main)},
+                            onBack = {nc.popBackStack()}
+                        )
+                    }
+
+                    composable<Route.Login> {
+                        LoginScreen(
+                            onCreateNewAccount = {nc.navigate(Route.CreateLogin)},
+                            onGuestLogin = {nc.navigate(Route.Main)},
+                            onLogin = {nc.navigate(Route.Main)}
+                        )
+                    }
                 }
             }
         }

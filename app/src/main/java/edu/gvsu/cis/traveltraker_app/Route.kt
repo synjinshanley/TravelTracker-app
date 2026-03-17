@@ -20,4 +20,11 @@ sealed class Route {
 
     @Serializable
     data object Profile
+
+    @Serializable
+    data object CreateLogin
+
+    @Serializable
+    data object Login{
+    }
 }
