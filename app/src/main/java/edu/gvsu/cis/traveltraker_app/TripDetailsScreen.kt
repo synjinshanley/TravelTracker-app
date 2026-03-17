@@ -23,15 +23,15 @@ import androidx.compose.ui.unit.dp
 import edu.gvsu.cis.traveltraker_app.ui.theme.TravelTrakerappTheme
 
 @Composable
-fun TripDetailsScreen(modifier: Modifier = Modifier) {
+
+fun TripDetailsScreen(modifier: Modifier = Modifier, tripId: String, onBack: () -> Unit) {
     Column(Modifier.fillMaxSize().background(color = Color.LightGray), horizontalAlignment = Alignment.CenterHorizontally) {
         Row(modifier.fillMaxWidth().padding(horizontal = 15.dp, vertical = 15.dp), horizontalArrangement = Arrangement.SpaceBetween) {
             Button(
                 onClick = {
+                    onBack()
+                }) {
 
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(2, 38, 88))
-            ) {
                 Text("Return")
             }
             Button(
@@ -101,6 +101,6 @@ fun TripDetailsScreen(modifier: Modifier = Modifier) {
 @Composable
 fun TripDetailsScreenPreview() {
     TravelTrakerappTheme() {
-        TripDetailsScreen()
+        //TripDetailsScreen(tripID = "abcd")
     }
 }

@@ -45,6 +45,14 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
+                    composable<Route.PlanTrip> {
+                        PlanTripScreen(
+                            onBack = {
+                                nc.popBackStack()
+                            }
+                        )
+                    }
+
                     composable<Route.History> {
 
                         val fakeTrips = listOf(
@@ -70,10 +78,10 @@ class MainActivity : ComponentActivity() {
                         val temp = it.toRoute<Route.TripDetails>()
 
                         TripDetailsScreen(
-                            //tripId = temp.tripID,
-                            //onBack = {
-                                //nc.popBackStack()
-                            //}
+                            tripId = temp.tripID,
+                            onBack = {
+                                nc.popBackStack()
+                            }
                         )
                     }
 
