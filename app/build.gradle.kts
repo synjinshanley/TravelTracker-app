@@ -7,13 +7,13 @@ plugins {
 }
 
 android {
-    namespace = "edu.gvsu.cis.traveltraker_app"
+    namespace = "edu.gvsu.cis.traveltracker_app"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "edu.gvsu.cis.traveltraker_app"
+        applicationId = "edu.gvsu.cis.traveltracker_app"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -65,7 +65,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 
 
-    implementation(platform("com.google.firebase:firebase-bom:34.11.0"))
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx")
