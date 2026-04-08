@@ -18,8 +18,32 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 import edu.gvsu.cis.traveltraker_app.ui.theme.TravelTrakerappTheme
 
+
+@Composable
+fun MapScreen() {
+    val location = LatLng(51.5074, -0.1278) // Example: London
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(location, 10f)
+    }
+
+    GoogleMap(
+        modifier = Modifier.fillMaxSize(),
+        cameraPositionState = cameraPositionState
+    ) {
+        Marker(
+            state = MarkerState(position = location),
+            title = "My Marker"
+        )
+    }
+}
 
 @Composable
 fun MainScreen(
@@ -28,14 +52,7 @@ fun MainScreen(
     onOpenHistory: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-
-       // Map placeholder image
-        Image(
-            painter = painterResource(id = R.drawable.map_placeholder),
-            contentDescription = "Map placeholder",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
+        MapScreen()
 
         // Profile Button
         Button(
