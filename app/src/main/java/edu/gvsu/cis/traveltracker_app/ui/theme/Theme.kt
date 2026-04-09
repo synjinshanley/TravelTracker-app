@@ -1,6 +1,5 @@
-package edu.gvsu.cis.traveltraker_app.ui.theme
+package edu.gvsu.cis.traveltracker_app.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

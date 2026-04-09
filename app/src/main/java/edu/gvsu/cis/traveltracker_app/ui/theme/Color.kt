@@ -1,4 +1,4 @@
-package edu.gvsu.cis.traveltraker_app.ui.theme
+package edu.gvsu.cis.traveltracker_app.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
