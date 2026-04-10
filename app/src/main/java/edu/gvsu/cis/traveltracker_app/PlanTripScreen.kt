@@ -16,67 +16,138 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.gvsu.cis.traveltracker_app.ui.theme.TravelTrakerappTheme
+import kotlinx.coroutines.launch
 
 @Composable
-fun PlanTripScreen(modifier: Modifier = Modifier, onBack: () -> Unit) {
+fun PlanTripScreen(
+    modifier: Modifier = Modifier,
+    onBack: () -> Unit,
+    travelViewModel: TravelViewModel = viewModel()
+) {
+    var title by remember { mutableStateOf("") }
     var startingLocation by remember { mutableStateOf("") }
-    Column(Modifier.fillMaxSize().background(color = Color.LightGray), horizontalAlignment = Alignment.CenterHorizontally) {
-        Row(modifier.fillMaxWidth().padding(top = 15.dp, start = 10.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+    var destination by remember { mutableStateOf("") }
+    var transportation by remember { mutableStateOf("") }
+    var notes by remember { mutableStateOf("") }
+
+    val scope = rememberCoroutineScope()
+
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(color = Color.LightGray),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            modifier
+                .fillMaxWidth()
+                .padding(top = 15.dp, start = 10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             Button(
                 onClick = {
                     onBack()
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(2, 38, 88))) {
-
+                    containerColor = Color(2, 38, 88)
+                )
+            ) {
                 Text("Return")
             }
         }
-        Box(Modifier.fillMaxWidth().padding(10.dp).background(Color(0xFF2C2C2E))) {
-            Column() {
-                Row() {
+
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+                .background(Color(0xFF2C2C2E))
+        ) {
+            Column {
+                Row {
+                    Text("Trip Title", Modifier.padding(10.dp), color = Color.White)
+                }
+                Row {
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .background(Color.White)
+                            .fillMaxWidth(),
+                        value = title,
+                        onValueChange = { title = it }
+                    )
+                }
+            }
+        }
+
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+                .background(Color(0xFF2C2C2E))
+        ) {
+            Column {
+                Row {
                     Text("Where are we starting?", Modifier.padding(10.dp), color = Color.White)
                 }
-                Row() {
+                Row {
                     OutlinedTextField(
-                        modifier = Modifier.background(Color.White).fillMaxWidth(),
+                        modifier = Modifier
+                            .background(Color.White)
+                            .fillMaxWidth(),
                         value = startingLocation,
-                        onValueChange = { startingLocation = it },
+                        onValueChange = { startingLocation = it }
                     )
                 }
-            }
-        }
-        Box(Modifier.fillMaxWidth().padding(10.dp).background(Color(0xFF2C2C2E))) {
-            Column() {
-                Row() {
+
+                Row {
                     Text("Where are we going?", Modifier.padding(10.dp), color = Color.White)
                 }
-                Row() {
+                Row {
                     OutlinedTextField(
-                        modifier = Modifier.background(Color.White).fillMaxWidth(),
-                        value = startingLocation,
-                        onValueChange = { startingLocation = it },
+                        modifier = Modifier
+                            .background(Color.White)
+                            .fillMaxWidth(),
+                        value = destination,
+                        onValueChange = { destination = it }
                     )
                 }
-                Row() {
+
+                Row {
                     Text("How will we get there?", Modifier.padding(10.dp), color = Color.White)
                 }
-                Row() {
+                Row {
                     OutlinedTextField(
-                        modifier = Modifier.background(Color.White).fillMaxWidth(),
-                        value = startingLocation,
-                        onValueChange = { startingLocation = it },
+                        modifier = Modifier
+                            .background(Color.White)
+                            .fillMaxWidth(),
+                        value = transportation,
+                        onValueChange = { transportation = it }
+                    )
+                }
+
+                Row {
+                    Text("Notes", Modifier.padding(10.dp), color = Color.White)
+                }
+                Row {
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .background(Color.White)
+                            .fillMaxWidth(),
+                        value = notes,
+                        onValueChange = { notes = it }
                     )
                 }
             }
         }
+
         Box(Modifier.fillMaxWidth().padding(10.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 Button(
@@ -84,16 +155,32 @@ fun PlanTripScreen(modifier: Modifier = Modifier, onBack: () -> Unit) {
 
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(2, 38, 88))) {
+                        containerColor = Color(2, 38, 88)
+                    )
+                ) {
                     Text("Add Stop")
                 }
+
                 Button(
                     onClick = {
-                        onBack()
+                        scope.launch {
+                            val tripId = travelViewModel.createTrip(
+                                title = title,
+                                startingLocation = startingLocation,
+                                destination = destination,
+                                transportation = transportation,
+                                notes = notes
+                            )
+
+                            if (tripId != null) {
+                                onBack()
+                            }
+                        }
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(2, 38, 88))) {
-
+                        containerColor = Color(2, 38, 88)
+                    )
+                ) {
                     Text("Finalize")
                 }
             }
@@ -105,6 +192,6 @@ fun PlanTripScreen(modifier: Modifier = Modifier, onBack: () -> Unit) {
 @Composable
 fun PlanTripScreenPreview() {
     TravelTrakerappTheme() {
-        //PlanTripScreen()
+        //PlanTripScreen(onBack = {})
     }
 }

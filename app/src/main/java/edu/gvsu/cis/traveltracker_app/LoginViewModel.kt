@@ -2,7 +2,8 @@ package edu.gvsu.cis.traveltracker_app
 
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.delay
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -15,6 +16,7 @@ data class LoginState(
 
 class LoginViewModel : ViewModel() {
     private val auth = FirebaseAuth.getInstance()
+    private val db = FirebaseFirestore.getInstance()
 
     private var _loginState = MutableStateFlow(LoginState())
     val loginState = _loginState.asStateFlow()
@@ -36,14 +38,28 @@ class LoginViewModel : ViewModel() {
         }
     }
 
-    suspend fun signUp(email: String, password: String): String? {
+    suspend fun signUp(email: String, password: String, name: String): String? {
         _loginState.update { it.copy(inProgress = true, error = null) }
         return try {
             val result = auth.createUserWithEmailAndPassword(email, password).await()
+            val uid = result.user?.uid
+
+            if (uid != null) {
+                val userData = mapOf(
+                    "email" to email,
+                    "name" to name,
+                    "createdAt" to FieldValue.serverTimestamp()
+                )
+
+                db.collection("users")
+                    .document(uid)
+                    .set(userData)
+                    .await()
+            }
 
             _loginState.update { it.copy(inProgress = false) }
-            _uid.value = result.user?.uid
-            result.user?.uid
+            _uid.value = uid
+            uid
         } catch (e: Exception) {
             _loginState.update { it.copy(error = e.localizedMessage, inProgress = false) }
             null
