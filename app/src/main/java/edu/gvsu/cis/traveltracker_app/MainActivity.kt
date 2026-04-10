@@ -1,4 +1,4 @@
-package edu.gvsu.cis.traveltraker_app
+package edu.gvsu.cis.traveltracker_app
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -45,6 +45,14 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
+                    composable<Route.PlanTrip> {
+                        PlanTripScreen(
+                            onBack = {
+                                nc.popBackStack()
+                            }
+                        )
+                    }
+
                     composable<Route.History> {
 
                         val fakeTrips = listOf(
@@ -74,6 +82,25 @@ class MainActivity : ComponentActivity() {
                             onBack = {
                                 nc.popBackStack()
                             }
+                        )
+                    }
+
+                    composable<Route.Profile> {
+                        ProfileScreen(onChangeProfile = {nc.navigate(Route.Login)}, onHome = {nc.popBackStack(route = Route.Main, inclusive = false)})
+                    }
+
+                    composable<Route.CreateLogin> {
+                        CreateLoginScreen(
+                            onCreateLogin = {nc.navigate(Route.Main)},
+                            onBack = {nc.popBackStack()}
+                        )
+                    }
+
+                    composable<Route.Login> {
+                        LoginScreen(
+                            onCreateNewAccount = {nc.navigate(Route.CreateLogin)},
+                            onGuestLogin = {nc.navigate(Route.Main)},
+                            onLogin = {nc.navigate(Route.Main)}
                         )
                     }
                 }

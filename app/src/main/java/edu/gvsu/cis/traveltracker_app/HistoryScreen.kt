@@ -1,4 +1,4 @@
-package edu.gvsu.cis.traveltraker_app
+package edu.gvsu.cis.traveltracker_app
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -15,9 +15,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import edu.gvsu.cis.traveltracker_app.ui.theme.TravelTrakerappTheme
 
 val BackgroundDark = Color(0xFF1C1C1E)
 val CardDark = Color(0xFF2C2C2E)
@@ -37,25 +40,19 @@ fun HistoryScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(BackgroundDark)
-            .padding(16.dp)
+            .background(Color.LightGray)
+            .padding(top=50.dp, start = 16.dp, end = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row() {
-            Button(
-                onClick = onBack,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = CardDark,
-                    contentColor = Color.White
-                )
-            ) {
-                Text("Back")
-            }
+
 
             Text(
-                text = "     Trip History",
-                color = Color.White,
+                text = "Trip History",
+                color = Color.Black,
                 textAlign = TextAlign.Center,
-                fontSize = 28.sp
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -72,6 +69,20 @@ fun HistoryScreen(
                 )
             }
         }
+
+        Spacer(modifier = Modifier.weight(1f))
+        Button(
+            onClick = onBack,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(2, 38, 88),
+                contentColor = Color.White
+            ),
+            modifier = Modifier
+                .fillMaxWidth(0.33f)
+                .padding(bottom = 16.dp)
+        ) {
+            Text("Back")
+        }
     }
 }
 
@@ -87,7 +98,7 @@ fun TripHistoryItem(
             .padding(vertical = 6.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = CardDark
+            containerColor = Color.DarkGray
         ),
         onClick = onClick
     ) {
@@ -114,5 +125,21 @@ fun TripHistoryItem(
                 color = Color.White
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun HistoryScreenPreview() {
+    TravelTrakerappTheme {
+        HistoryScreen(
+            trips = listOf(
+                TripUi("1", "Chicago"),
+                TripUi("2", "Spring Break Florida"),
+                TripUi("3", "Traverse City Weekend")
+            ),
+            onOpenTripDetails = {},
+            onBack = {}
+        )
     }
 }

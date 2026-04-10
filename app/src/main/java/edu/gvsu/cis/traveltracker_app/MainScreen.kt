@@ -1,4 +1,4 @@
-package edu.gvsu.cis.traveltraker_app
+package edu.gvsu.cis.traveltracker_app
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -6,18 +6,45 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import edu.gvsu.cis.traveltraker_app.R
+import edu.gvsu.cis.traveltracker_app.R
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
+
+
+
+
+@Composable
+fun MapScreen() {
+    val location = LatLng(51.5074, -0.1278) // Example: London
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(location, 10f)
+    }
+
+    GoogleMap(
+        modifier = Modifier.fillMaxSize(),
+        cameraPositionState = cameraPositionState
+    ) {
+        Marker(
+            state = MarkerState(position = location),
+            title = "My Marker"
+        )
+    }
+}
 
 @Composable
 fun MainScreen(
@@ -26,14 +53,7 @@ fun MainScreen(
     onOpenHistory: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-
-       // Map placeholder image
-        Image(
-            painter = painterResource(id = R.drawable.map_placeholder),
-            contentDescription = "Map placeholder",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
+        MapScreen()
 
         // Profile Button
         Button(
@@ -42,9 +62,11 @@ fun MainScreen(
                 .align(Alignment.TopEnd)
                 .padding(16.dp),
             shape = CircleShape,
-            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp)
+            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(2, 38, 88))
         ) {
-            Text("U")
+            Text("Profile")
         }
 
         // Bottom bar
@@ -52,7 +74,7 @@ fun MainScreen(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth(),
-            color = Color(0xFF1C1C1E)
+            color = Color.LightGray
         ) {
             Row(
                 modifier = Modifier
@@ -65,9 +87,7 @@ fun MainScreen(
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF2C2C2E), // slightly lighter than bar
-                        contentColor = Color.White
-                    )
+                        containerColor = Color(2, 38, 88))
                 ) {
                     Text("Plan Trip")
                 }
@@ -77,9 +97,7 @@ fun MainScreen(
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF2C2C2E),
-                        contentColor = Color.White
-                    )
+                        containerColor = Color(2, 38, 88))
                 ) {
                     Text("History")
                 }
@@ -87,3 +105,11 @@ fun MainScreen(
         }
     }
 }
+/*
+@Preview(showBackground = true)
+@Composable
+fun MainScreenPreview() {
+    TravelTrackerappTheme {
+        MainScreen(onOpenProfile = {}, onOpenPlanTrip = {}, onOpenHistory = {})
+    }
+}*/

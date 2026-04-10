@@ -1,6 +1,5 @@
-package edu.gvsu.cis.traveltraker_app
+package edu.gvsu.cis.traveltracker_app
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -12,31 +11,40 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import edu.gvsu.cis.traveltraker_app.ui.theme.TravelTrakerappTheme
+import androidx.lifecycle.viewmodel.compose.viewModel
+import edu.gvsu.cis.traveltracker_app.ui.theme.TravelTrakerappTheme
+import androidx.compose.material3.CircularProgressIndicator
+import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(name: String, modifier: Modifier = Modifier) {
+fun LoginScreen(modifier: Modifier = Modifier, onCreateNewAccount: () -> Unit, onGuestLogin: () -> Unit, onLogin: () -> Unit, loginViewModel: LoginViewModel = viewModel()) {
 
-    var username by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
+    val loginState by loginViewModel.loginState.collectAsState()
+
+    val scope = rememberCoroutineScope()
 
 
     Column(modifier = Modifier
         .fillMaxSize()
         .background(color = Color.LightGray),
-        // These properties will center all children of the Column
+
         horizontalAlignment = Alignment.CenterHorizontally){
         Text(
             text = "Login",
@@ -49,9 +57,9 @@ fun LoginScreen(name: String, modifier: Modifier = Modifier) {
 
 
         OutlinedTextField(
-            value = username,
-            onValueChange = { username = it },
-            label = { Text("Username") },
+            value = email,
+            onValueChange = { email= it },
+            label = { Text("Email") },
             singleLine = true,
             modifier = Modifier.padding(top = 30.dp)
         )
@@ -61,14 +69,24 @@ fun LoginScreen(name: String, modifier: Modifier = Modifier) {
             onValueChange = { password = it },
             label = { Text("Password") },
             singleLine = true,
+            visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.padding(top = 20.dp)
         )
+
+        if (loginState.error != null) {
+            Text(
+                text = loginState.error ?: "",
+                color = Color.Red,
+                modifier = Modifier.padding(top = 12.dp)
+            )
+        }
 
         Text(
             text = "Continue as guest",
             modifier = Modifier
                 .padding(top = 80.dp)
                 .clickable {
+                    onGuestLogin()
                 },
             color = Color(2, 38, 88),
             fontWeight = FontWeight.Bold
@@ -79,23 +97,34 @@ fun LoginScreen(name: String, modifier: Modifier = Modifier) {
             modifier = Modifier
                 .padding(top = 20.dp)
                 .clickable {
-
+                    onCreateNewAccount()
                 },
             color = Color(2, 38, 88),
             fontWeight = FontWeight.Bold
         )
 
-        Button(onClick = { /* Handle login button click */},
-            // 2. Add fillMaxWidth to the modifier chain
-            modifier = Modifier
-                .fillMaxWidth(0.33f) // This makes the button 1/3 of the screen width
-                .padding(top = 80.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(2, 38, 88))) {
-            Text("Login")
+        if (loginState.inProgress) {
+            CircularProgressIndicator(modifier = Modifier.padding(top = 80.dp))
+        } else {
+            Button(
+                onClick = {
+                    scope.launch {
+                        val uid = loginViewModel.signIn(email, password)
+                        if (uid != null) onLogin()
+                    }
+                },
+
+                modifier = Modifier
+                    .fillMaxWidth(0.33f)
+                    .padding(top = 80.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(2, 38, 88)
+                )
+            ) {
+                Text("Login")
+            }
+
         }
-
-
     }
 }
 
@@ -103,6 +132,6 @@ fun LoginScreen(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun LoginScreenPreview() {
     TravelTrakerappTheme {
-        LoginScreen("Android")
+        LoginScreen(onCreateNewAccount = {}, onGuestLogin = {}, onLogin = {})
     }
 }

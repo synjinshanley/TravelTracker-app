@@ -1,4 +1,4 @@
-package edu.gvsu.cis.traveltraker_app
+package edu.gvsu.cis.traveltracker_app
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,10 +25,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import edu.gvsu.cis.traveltraker_app.ui.theme.TravelTrakerappTheme
+import edu.gvsu.cis.traveltracker_app.ui.theme.TravelTrakerappTheme
 
 @Composable
-fun ProfileScreen(name: String, modifier: Modifier = Modifier) {
+fun ProfileScreen(modifier: Modifier = Modifier, onChangeProfile: () -> Unit, onHome: () -> Unit) {
 
     var username by remember { mutableStateOf("Lauren_Applegate") }
     var address by remember { mutableStateOf("1234 Laker Ln, Allendale MI, 49401") }
@@ -74,7 +74,7 @@ fun ProfileScreen(name: String, modifier: Modifier = Modifier) {
             text = "Change Profile",
             modifier = Modifier
                 .padding(top = 50.dp)
-                .clickable { /* Handle "Change Profile" click */ },
+                .clickable { onChangeProfile() },
             color = Color(2, 38, 88),
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp
@@ -86,18 +86,9 @@ fun ProfileScreen(name: String, modifier: Modifier = Modifier) {
                 .padding(top = 20.dp, start = 32.dp, end = 32.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Button(
-                onClick = { /* Handle History button click */ },
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(2, 38, 88)
-                )
-            ) {
-                Text("History")
-            }
 
             Button(
-                onClick = { /* Handle Home button click */ },
+                onClick = { onHome() },
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(2, 38, 88)
@@ -113,6 +104,6 @@ fun ProfileScreen(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun ProfileScreenPreview() {
     TravelTrakerappTheme {
-        ProfileScreen("Android")
+        ProfileScreen(onChangeProfile = {}, onHome = {})
     }
 }
