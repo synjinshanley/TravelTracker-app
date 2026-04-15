@@ -39,6 +39,7 @@ fun CreateLoginScreen(modifier: Modifier = Modifier, onCreateLogin: () -> Unit, 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var repassword by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("") }
 
     val loginState by loginViewModel.loginState.collectAsState()
     val scope = rememberCoroutineScope()
@@ -60,6 +61,14 @@ fun CreateLoginScreen(modifier: Modifier = Modifier, onCreateLogin: () -> Unit, 
         Image(
             painter = painterResource(id = R.drawable.profile3),
             contentDescription = null
+        )
+
+        OutlinedTextField(
+            value = name,
+            onValueChange = { name = it },
+            label = { Text("Name") },
+            singleLine = true,
+            modifier = Modifier.padding(top = 40.dp)
         )
 
         OutlinedTextField(
@@ -112,7 +121,7 @@ fun CreateLoginScreen(modifier: Modifier = Modifier, onCreateLogin: () -> Unit, 
                         } else {
                             passwordError = null
                             scope.launch {
-                                val uid = loginViewModel.signUp(email, password)
+                                val uid = loginViewModel.signUp(email, password, name)
                                 if (uid != null) onCreateLogin()
                             }
                         }

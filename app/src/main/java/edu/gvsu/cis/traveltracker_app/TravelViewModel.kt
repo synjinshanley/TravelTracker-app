@@ -12,12 +12,25 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Locale
+import androidx.lifecycle.ViewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
+
 
 
 data class trip(
     val id: Int,
     val name: String,
     var points: List<savedLocation>
+)
+
+data class Trip(
+    val title: String = "",
+    val startingLocation: String = "",
+    val destination: String = "",
+    val transportation: String = "",
+    val notes: String = ""
 )
 
 data class savedLocation(
@@ -55,6 +68,39 @@ class TravelViewModel(application: Application) : AndroidViewModel(application) 
 
     private val _locations = MutableStateFlow(listOf<savedLocation>())
     val locations = _locations.asStateFlow()
+    
+    private val auth = FirebaseAuth.getInstance()
+    private val db = FirebaseFirestore.getInstance()
+    
+     suspend fun createTrip(
+        title: String,
+        startingLocation: String,
+        destination: String,
+        transportation: String,
+        notes: String
+    ): String? {
+        return try {
+            val uid = auth.currentUser?.uid ?: return null
+
+            val trip = Trip(
+                title = title,
+                startingLocation = startingLocation,
+                destination = destination,
+                transportation = transportation,
+                notes = notes
+            )
+
+            val tripRef = db.collection("users")
+                .document(uid)
+                .collection("trips")
+                .document()
+
+            tripRef.set(trip).await()
+            tripRef.id
+        } catch (e: Exception) {
+            null
+        }
+    }
 
     fun addLocation(location: savedLocation) {
         _trip.update { currentTrip ->
