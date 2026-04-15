@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -12,6 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import edu.gvsu.cis.traveltraker_app.TravelViewModel
 
 class MainActivity : ComponentActivity() {
 
@@ -20,7 +22,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-
+            val viewModel by viewModels<TravelViewModel>()
             Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 
                 val nc = rememberNavController()
@@ -33,6 +35,7 @@ class MainActivity : ComponentActivity() {
 
                     composable<Route.Main> {
                         MainScreen(
+                            viewModel = viewModel,
                             onOpenProfile = {
                                 nc.navigate(Route.Profile)
                             },
@@ -47,6 +50,7 @@ class MainActivity : ComponentActivity() {
 
                     composable<Route.PlanTrip> {
                         PlanTripScreen(
+                            viewModel = viewModel,
                             onBack = {
                                 nc.popBackStack()
                             }
@@ -62,6 +66,7 @@ class MainActivity : ComponentActivity() {
                         )
 
                         HistoryScreen(
+                            viewModel = viewModel,
                             trips = fakeTrips,
                             onOpenTripDetails = { tripId ->
                                 val dest = Route.TripDetails(tripId)

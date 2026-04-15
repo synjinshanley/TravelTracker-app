@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.gvsu.cis.traveltracker_app.ui.theme.TravelTrakerappTheme
+import edu.gvsu.cis.traveltraker_app.TravelViewModel
 import kotlinx.coroutines.launch
 
 @Composable
