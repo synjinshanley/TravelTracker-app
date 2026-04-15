@@ -13,6 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import edu.gvsu.cis.traveltraker_app.TravelViewModel
 
 class MainActivity : ComponentActivity() {
 
@@ -21,7 +22,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            val viewModel by viewModels<MapViewModel>()
+            val viewModel by viewModels<TravelViewModel>()
             Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 
                 val nc = rememberNavController()

@@ -34,11 +34,10 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
-import edu.gvsu.cis.traveltraker_app.ui.theme.TravelTrakerappTheme
 import com.google.maps.android.compose.Polyline
 import androidx.compose.runtime.LaunchedEffect
-
-
+import edu.gvsu.cis.traveltraker_app.TravelViewModel
+import edu.gvsu.cis.traveltraker_app.savedLocation
 
 
 @Composable
@@ -81,7 +80,7 @@ fun MapScreen(locations: List<savedLocation> = emptyList()) {
 
 @Composable
 fun MainScreen(
-    viewModel: MapViewModel,
+    viewModel: TravelViewModel,
     onOpenProfile: () -> Unit,
     onOpenPlanTrip: () -> Unit,
     onOpenHistory: () -> Unit
@@ -116,7 +115,7 @@ fun MainScreen(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth(),
-            color = Color.LightGray
+            color = Color.Transparent
         ) {
             Row(
                 modifier = Modifier

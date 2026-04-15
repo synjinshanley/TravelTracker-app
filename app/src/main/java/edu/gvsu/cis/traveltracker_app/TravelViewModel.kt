@@ -48,7 +48,7 @@ fun getAddressFromLatLng(context: Context, lat: Double, lng: Double): String? {
 }
 
 
-class MapViewModel(application: Application) : AndroidViewModel(application) {
+class TravelViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _trip = MutableStateFlow(trip(1, "My Trip", emptyList()))
     val currentTrip = _trip.asStateFlow()

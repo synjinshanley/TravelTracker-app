@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import edu.gvsu.cis.traveltracker_app.ui.theme.TravelTrakerappTheme
+import edu.gvsu.cis.traveltraker_app.TravelViewModel
 
 val BackgroundDark = Color(0xFF1C1C1E)
 val CardDark = Color(0xFF2C2C2E)
@@ -32,7 +33,7 @@ data class TripUi(
 
 @Composable
 fun HistoryScreen(
-    viewModel: MapViewModel,
+    viewModel: TravelViewModel,
     trips: List<TripUi>,
     onOpenTripDetails: (String) -> Unit,
     onBack: () -> Unit

@@ -23,9 +23,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import edu.gvsu.cis.traveltracker_app.ui.theme.TravelTrakerappTheme
+import edu.gvsu.cis.traveltraker_app.TravelViewModel
 
 @Composable
-fun PlanTripScreen(modifier: Modifier = Modifier, viewModel: MapViewModel, onBack: () -> Unit) {
+fun PlanTripScreen(modifier: Modifier = Modifier, viewModel: TravelViewModel, onBack: () -> Unit) {
     var startingLocation by remember { mutableStateOf("") }
     Column(Modifier.fillMaxSize().background(color = Color.LightGray), horizontalAlignment = Alignment.CenterHorizontally) {
         Row(modifier.fillMaxWidth().padding(top = 15.dp, start = 10.dp), horizontalArrangement = Arrangement.SpaceBetween) {
