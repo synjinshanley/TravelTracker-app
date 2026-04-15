@@ -98,7 +98,7 @@ fun TripHistoryItem(
             .padding(vertical = 6.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.DarkGray
+            containerColor = Color(2, 38, 88)
         ),
         onClick = onClick
     ) {

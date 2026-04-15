@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -93,7 +95,7 @@ fun PlanTripScreen(
                 .padding(10.dp)
                 .background(Color(0xFF2C2C2E))
         ) {
-            Column {
+            Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
                 Row {
                     Text("Where are we starting?", Modifier.padding(10.dp), color = Color.White)
                 }
@@ -106,6 +108,8 @@ fun PlanTripScreen(
                         onValueChange = { startingLocation = it }
                     )
                 }
+
+                //Spacer(modifier = Modifier.height(10.dp))
 
                 Row {
                     Text("Where are we going?", Modifier.padding(10.dp), color = Color.White)
@@ -120,6 +124,8 @@ fun PlanTripScreen(
                     )
                 }
 
+                //Spacer(modifier = Modifier.height(10.dp))
+
                 Row {
                     Text("How will we get there?", Modifier.padding(10.dp), color = Color.White)
                 }
@@ -132,6 +138,8 @@ fun PlanTripScreen(
                         onValueChange = { transportation = it }
                     )
                 }
+
+                //Spacer(modifier = Modifier.height(10.dp))
 
                 Row {
                     Text("Notes", Modifier.padding(10.dp), color = Color.White)
@@ -149,7 +157,7 @@ fun PlanTripScreen(
         }
 
         Box(Modifier.fillMaxWidth().padding(10.dp)) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterHorizontally)) {
                 Button(
                     onClick = {
 
@@ -192,6 +200,6 @@ fun PlanTripScreen(
 @Composable
 fun PlanTripScreenPreview() {
     TravelTrakerappTheme() {
-        //PlanTripScreen(onBack = {})
+        PlanTripScreen(onBack = {})
     }
 }

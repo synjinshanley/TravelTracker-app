@@ -49,58 +49,56 @@ fun MapScreen() {
 @Composable
 fun MainScreen(
     onOpenProfile: () -> Unit,
-    onOpenPlanTrip: () -> Unit,
-    onOpenHistory: () -> Unit
+    onOpenPlanTrip: () -> Unit,    onOpenHistory: () -> Unit
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        MapScreen()
+    androidx.compose.material3.Scaffold(
+        bottomBar = {
 
-        // Profile Button
-        Button(
-            onClick = onOpenProfile,
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(16.dp),
-            shape = CircleShape,
-            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(2, 38, 88))
-        ) {
-            Text("Profile")
-        }
-
-        // Bottom bar
-        Surface(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth(),
-            color = Color.LightGray
-        ) {
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 14.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = Color.LightGray
             ) {
-                Button(
-                    onClick = onOpenPlanTrip,
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(2, 38, 88))
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 14.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text("Plan Trip")
-                }
+                    Button(
+                        onClick = onOpenPlanTrip,
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(2, 38, 88))
+                    ) {
+                        Text("Plan Trip")
+                    }
 
-                Button(
-                    onClick = onOpenHistory,
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(2, 38, 88))
-                ) {
-                    Text("History")
+                    Button(
+                        onClick = onOpenHistory,
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(2, 38, 88))
+                    ) {
+                        Text("History")
+                    }
                 }
+            }
+        }
+    ) { innerPadding ->
+
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+        ) {
+            MapScreen()
+
+
+            Button(
+                onClick = onOpenProfile,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(2, 38, 88))
+            ) {
+                Text("Profile")
             }
         }
     }
