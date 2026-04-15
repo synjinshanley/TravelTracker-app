@@ -2,8 +2,6 @@ package edu.gvsu.cis.traveltraker_app
 
 import android.app.Application
 import android.content.Context
-import androidx.compose.runtime.mutableStateListOf
-import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import android.location.Geocoder
