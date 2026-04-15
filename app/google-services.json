@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "288057953012",
+    "project_id": "traveltracker-app-23b81",
+    "storage_bucket": "traveltracker-app-23b81.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:288057953012:android:80fa3b42482860cf742ca1",
+        "android_client_info": {
+          "package_name": "edu.gvsu.cis.traveltracker_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3uIeCm4za2BzUr5WWa5DrLGBjEcuEskg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

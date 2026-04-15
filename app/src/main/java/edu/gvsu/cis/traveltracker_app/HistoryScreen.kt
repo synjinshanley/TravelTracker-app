@@ -1,4 +1,4 @@
-package edu.gvsu.cis.traveltraker_app
+package edu.gvsu.cis.traveltracker_app
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import edu.gvsu.cis.traveltraker_app.ui.theme.TravelTrakerappTheme
+import edu.gvsu.cis.traveltracker_app.ui.theme.TravelTrakerappTheme
 
 val BackgroundDark = Color(0xFF1C1C1E)
 val CardDark = Color(0xFF2C2C2E)

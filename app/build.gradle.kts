@@ -3,16 +3,18 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     kotlin("plugin.serialization") version("2.0.0")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+    id("com.google.gms.google-services")
+
 }
 
 android {
-    namespace = "edu.gvsu.cis.traveltraker_app"
+    namespace = "edu.gvsu.cis.traveltracker_app"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "edu.gvsu.cis.traveltraker_app"
+        applicationId = "edu.gvsu.cis.traveltracker_app"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -66,5 +68,12 @@ dependencies {
     // Force newer versions to resolve namespace conflict
     implementation("androidx.vectordrawable:vectordrawable:1.2.0")
     implementation("androidx.vectordrawable:vectordrawable-animated:1.2.0")
+
+
+
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx")
 
 }

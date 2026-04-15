@@ -1,4 +1,4 @@
-package edu.gvsu.cis.traveltraker_app
+package edu.gvsu.cis.traveltracker_app
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.background
@@ -20,7 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import edu.gvsu.cis.traveltraker_app.ui.theme.TravelTrakerappTheme
+import edu.gvsu.cis.traveltracker_app.ui.theme.TravelTrakerappTheme
 
 @Composable
 
