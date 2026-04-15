@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import edu.gvsu.cis.traveltraker_app.ui.theme.TravelTrakerappTheme
 
 @Composable
-fun PlanTripScreen(modifier: Modifier = Modifier, onBack: () -> Unit) {
+fun PlanTripScreen(modifier: Modifier = Modifier, viewModel: MapViewModel, onBack: () -> Unit) {
     var startingLocation by remember { mutableStateOf("") }
     Column(Modifier.fillMaxSize().background(color = Color.LightGray), horizontalAlignment = Alignment.CenterHorizontally) {
         Row(modifier.fillMaxWidth().padding(top = 15.dp, start = 10.dp), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -59,7 +59,7 @@ fun PlanTripScreen(modifier: Modifier = Modifier, onBack: () -> Unit) {
         Box(Modifier.fillMaxWidth().padding(10.dp).background(Color(0xFF2C2C2E))) {
             Column() {
                 Row() {
-                    Text("Where are we going?", Modifier.padding(10.dp), color = Color.White)
+                    Text("Where are we going? (address, city name, etc.)", Modifier.padding(10.dp), color = Color.White)
                 }
                 Row() {
                     OutlinedTextField(

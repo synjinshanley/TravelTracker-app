@@ -32,6 +32,7 @@ data class TripUi(
 
 @Composable
 fun HistoryScreen(
+    viewModel: MapViewModel,
     trips: List<TripUi>,
     onOpenTripDetails: (String) -> Unit,
     onBack: () -> Unit
@@ -128,6 +129,7 @@ fun TripHistoryItem(
     }
 }
 
+/*
 @Preview(showBackground = true)
 @Composable
 fun HistoryScreenPreview() {
@@ -143,3 +145,4 @@ fun HistoryScreenPreview() {
         )
     }
 }
+*/
