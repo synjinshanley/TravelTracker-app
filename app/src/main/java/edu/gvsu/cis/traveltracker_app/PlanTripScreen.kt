@@ -1,18 +1,27 @@
 package edu.gvsu.cis.traveltracker_app
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,13 +31,156 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.gvsu.cis.traveltracker_app.ui.theme.TravelTrakerappTheme
 import kotlinx.coroutines.launch
 
+
+// Style variables
+private val NavyBlue   = Color(2, 38, 88)
+private val DarkCard   = Color(0xFF2C2C2E)
+private val Divider    = Color(0xFF444446)
+private val LabelGrey  = Color(0xFFB0B0B0)
+private val CardShape  = RoundedCornerShape(12.dp)
+private val FieldShape = RoundedCornerShape(8.dp)
+
+
+// Single line text field style
+@Composable
+fun TripField(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Text(label, color = LabelGrey, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            singleLine = true,
+            shape = FieldShape,
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                focusedBorderColor = NavyBlue,
+                unfocusedBorderColor = Color(0xFF888888),
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
+            )
+        )
+    }
+}
+
+// multi line notes field style
+@Composable
+private fun TripNotesField(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit
+) {
+    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Text(label, color = LabelGrey, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            shape = FieldShape,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(90.dp),
+            maxLines = 3,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                focusedBorderColor = NavyBlue,
+                unfocusedBorderColor = Color(0xFF888888),
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
+            )
+        )
+    }
+}
+
+
+// reusable card wrapper style for both main card and stop cards
+@Composable
+private fun SectionCard(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 6.dp)
+            .clip(CardShape)
+            .background(DarkCard)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        content()
+    }
+}
+
+
+// Stop card
+@Composable
+private fun StopCard(
+    stopNumber: Int,
+    stop: TripStop,
+    onStopChange: (TripStop) -> Unit,
+    onRemove: () -> Unit
+) {
+    SectionCard {
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Stop $stopNumber",
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 15.sp
+            )
+            Button(
+                onClick = onRemove,
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(180, 30, 30)),
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
+            ) {
+                Text("Remove", fontSize = 12.sp)
+            }
+        }
+
+        HorizontalDivider(color = Divider, thickness = 1.dp)
+
+        TripField(
+            label = "Location",
+            value = stop.location,
+            onValueChange = { onStopChange(stop.copy(location = it)) }
+        )
+        TripField(
+            label = "Transportation to this stop",
+            value = stop.transportation,
+            onValueChange = { onStopChange(stop.copy(transportation = it)) }
+        )
+        TripNotesField(
+            label = "Notes",
+            value = stop.notes,
+            onValueChange = { onStopChange(stop.copy(notes = it)) }
+        )
+    }
+}
+
+
+// Main screen
 @Composable
 fun PlanTripScreen(
     modifier: Modifier = Modifier,
@@ -40,166 +192,181 @@ fun PlanTripScreen(
     var destination by remember { mutableStateOf("") }
     var transportation by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
+    var stops by remember { mutableStateOf(listOf<TripStop>()) }
+    var saveError by remember { mutableStateOf<String?>(null) }
 
     val scope = rememberCoroutineScope()
+    val scrollState = rememberScrollState()
 
     Column(
         Modifier
             .fillMaxSize()
-            .background(color = Color.LightGray),
+            .background(Color(0xFFE5E5EA))
+            .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        // Top bar
         Row(
-            modifier
+            Modifier
                 .fillMaxWidth()
-                .padding(top = 15.dp, start = 10.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+                .padding(top = 16.dp, start = 12.dp, end = 12.dp)
         ) {
             Button(
-                onClick = {
-                    onBack()
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(2, 38, 88)
-                )
+                onClick = onBack,
+                shape = CircleShape,
+                colors = ButtonDefaults.buttonColors(containerColor = NavyBlue)
+            ) { Text("Return") }
+        }
+
+        // Page title
+        Text(
+            text = "Plan a Trip",
+            color = NavyBlue,
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 2.dp)
+        )
+
+        // Main trip details card
+        SectionCard {
+            Text(
+                text = "Trip Details",
+                color = Color.White,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 15.sp
+            )
+            HorizontalDivider(color = Divider, thickness = 1.dp)
+
+            TripField(
+                label = "Trip Title",
+                value = title,
+                onValueChange = { title = it }
+            )
+            TripField(
+                label = "Starting Location",
+                value = startingLocation,
+                onValueChange = { startingLocation = it }
+            )
+            TripField(
+                label = "Destination",
+                value = destination,
+                onValueChange = { destination = it }
+            )
+            TripField(
+                label = "Transportation",
+                value = transportation,
+                onValueChange = { transportation = it }
+            )
+            TripNotesField(
+                label = "Notes",
+                value = notes,
+                onValueChange = { notes = it }
+            )
+        }
+
+        // Stops section label
+        if (stops.isNotEmpty()) {
+            Text(
+                text = "Stops (${stops.size})",
+                color = NavyBlue,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 4.dp)
+            )
+        }
+
+        // Stop cards
+        stops.forEachIndexed { index, stop ->
+            AnimatedVisibility(
+                visible = true,
+                enter = expandVertically(),
+                exit = shrinkVertically()
             ) {
-                Text("Return")
-            }
-        }
-
-        Box(
-            Modifier
-                .fillMaxWidth()
-                .padding(10.dp)
-                .background(Color(0xFF2C2C2E))
-        ) {
-            Column {
-                Row {
-                    Text("Trip Title", Modifier.padding(10.dp), color = Color.White)
-                }
-                Row {
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .background(Color.White)
-                            .fillMaxWidth(),
-                        value = title,
-                        onValueChange = { title = it }
-                    )
-                }
-            }
-        }
-
-        Box(
-            Modifier
-                .fillMaxWidth()
-                .padding(10.dp)
-                .background(Color(0xFF2C2C2E))
-        ) {
-            Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                Row {
-                    Text("Where are we starting?", Modifier.padding(10.dp), color = Color.White)
-                }
-                Row {
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .background(Color.White)
-                            .fillMaxWidth(),
-                        value = startingLocation,
-                        onValueChange = { startingLocation = it }
-                    )
-                }
-
-                //Spacer(modifier = Modifier.height(10.dp))
-
-                Row {
-                    Text("Where are we going?", Modifier.padding(10.dp), color = Color.White)
-                }
-                Row {
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .background(Color.White)
-                            .fillMaxWidth(),
-                        value = destination,
-                        onValueChange = { destination = it }
-                    )
-                }
-
-                //Spacer(modifier = Modifier.height(10.dp))
-
-                Row {
-                    Text("How will we get there?", Modifier.padding(10.dp), color = Color.White)
-                }
-                Row {
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .background(Color.White)
-                            .fillMaxWidth(),
-                        value = transportation,
-                        onValueChange = { transportation = it }
-                    )
-                }
-
-                //Spacer(modifier = Modifier.height(10.dp))
-
-                Row {
-                    Text("Notes", Modifier.padding(10.dp), color = Color.White)
-                }
-                Row {
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .background(Color.White)
-                            .fillMaxWidth(),
-                        value = notes,
-                        onValueChange = { notes = it }
-                    )
-                }
-            }
-        }
-
-        Box(Modifier.fillMaxWidth().padding(10.dp)) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterHorizontally)) {
-                Button(
-                    onClick = {
-
+                StopCard(
+                    stopNumber = index + 1,
+                    stop = stop,
+                    onStopChange = { updated ->
+                        stops = stops.toMutableList().also { it[index] = updated }
                     },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(2, 38, 88)
-                    )
-                ) {
-                    Text("Add Stop")
-                }
+                    onRemove = {
+                        stops = stops.toMutableList().also { it.removeAt(index) }
+                    }
+                )
+            }
+        }
 
-                Button(
-                    onClick = {
-                        scope.launch {
-                            val tripId = travelViewModel.createTrip(
-                                title = title,
-                                startingLocation = startingLocation,
-                                destination = destination,
-                                transportation = transportation,
-                                notes = notes
-                            )
+        // Error message
+        if (saveError != null) {
+            Text(
+                text = saveError ?: "",
+                color = Color(200, 50, 50),
+                fontSize = 13.sp,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+            )
+        }
 
-                            if (tripId != null) {
-                                onBack()
-                            }
+        Spacer(Modifier.height(8.dp))
+
+        // Action buttons
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Button(
+                onClick = { stops = stops + TripStop() },
+                modifier = Modifier.weight(1f),
+                shape = CircleShape,
+                colors = ButtonDefaults.buttonColors(containerColor = NavyBlue)
+            ) { Text("+ Add Stop") }
+
+            Button(
+                onClick = {
+                    if (title.isBlank()) {
+                        saveError = "Please enter a trip title."
+                        return@Button
+                    }
+                    if (startingLocation.isBlank()) {
+                        saveError = "Please enter a starting location."
+                        return@Button
+                    }
+                    saveError = null
+                    scope.launch {
+                        val tripId = travelViewModel.createTrip(
+                            title = title,
+                            startingLocation = startingLocation,
+                            destination = destination,
+                            transportation = transportation,
+                            notes = notes,
+                            stops = stops
+                        )
+                        if (tripId != null) {
+                            onBack()
+                        } else {
+                            saveError = "Failed to save trip. Are you signed in?"
                         }
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(2, 38, 88)
-                    )
-                ) {
-                    Text("Finalize")
-                }
-            }
+                    }
+                },
+                modifier = Modifier.weight(1f),
+                shape = CircleShape,
+                colors = ButtonDefaults.buttonColors(containerColor = NavyBlue)
+            ) { Text("Finalize") }
         }
+
+        Spacer(Modifier.height(24.dp))
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PlanTripScreenPreview() {
-    TravelTrakerappTheme() {
+    TravelTrakerappTheme {
         PlanTripScreen(onBack = {})
     }
 }

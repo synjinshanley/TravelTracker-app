@@ -1,179 +1,300 @@
 package edu.gvsu.cis.traveltracker_app
 
-import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import edu.gvsu.cis.traveltracker_app.ui.theme.TravelTrakerappTheme
+import kotlinx.coroutines.tasks.await
 
+// style variables
+private val NavyBlue  = Color(2, 38, 88)
+private val DarkCard  = Color(0xFF2C2C2E)
+private val Divider   = Color(0xFF444446)
+private val CardShape = RoundedCornerShape(12.dp)
+
+
+// Local data holder
+private data class TripDetail(
+    val title: String,
+    val startingLocation: String,
+    val destination: String,
+    val transportation: String,
+    val notes: String,
+    val stops: List<TripStop>
+)
+
+
+// Reusable card block
 @Composable
-
-fun TripDetailsScreen(modifier: Modifier = Modifier, tripId: String, onBack: () -> Unit) {
-    Column(Modifier
-        .fillMaxSize()
-        .background(color = Color.LightGray), horizontalAlignment = Alignment.CenterHorizontally) {
-        Row(modifier
+private fun DetailCard(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Column(
+        modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 15.dp, vertical = 15.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-            Button(
-                onClick = {
-                    onBack()
-                }) {
+            .padding(horizontal = 12.dp, vertical = 6.dp)
+            .clip(CardShape)
+            .background(DarkCard)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        content()
+    }
+}
 
-                Text("Return")
-            }
-            Button(
-                onClick = {
 
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(2, 38, 88))
-            ) {
-                Text("Edit")
-            }
-        }
-        Card(Modifier
-            .fillMaxSize()
-            .padding(15.dp), shape = RoundedCornerShape(12.dp), colors = CardDefaults.cardColors(
-            containerColor = Color.Gray
-        )) {
-            Column() {
-                Row(
+// One stop row
+@Composable
+private fun StopDetailCard(stopNumber: Int, stop: TripStop) {
+    DetailCard {
+        // Stop header
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Stop $stopNumber",
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 15.sp
+            )
+            if (stop.transportation.isNotBlank()) {
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp)
-                        .background(
-                            color = Color(2, 38, 88),
-                            shape = RoundedCornerShape(10.dp)
-                        )
-                        .padding(12.dp),
-                    horizontalArrangement = Arrangement.Center
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(NavyBlue)
+                        .padding(horizontal = 10.dp, vertical = 4.dp)
                 ) {
                     Text(
-                        text = "May 2024 Trip Details",
+                        text = stop.transportation,
                         color = Color.White,
-                        fontWeight = FontWeight.Bold
+                        fontSize = 12.sp
                     )
                 }
-                Row(
-                    modifier = Modifier
-                        .padding(vertical = 15.dp)
-                        .background(
-                            color = Color.White.copy(alpha = 0.7f),
-                            shape = RoundedCornerShape(
-                                topStart = 0.dp,
-                                bottomStart = 0.dp,
-                                topEnd = 12.dp,
-                                bottomEnd = 12.dp
+            }
+        }
+
+        HorizontalDivider(color = Divider, thickness = 1.dp)
+
+        if (stop.location.isNotBlank()) {
+            LabelledValue(label = "Location", value = stop.location)
+        }
+        if (stop.notes.isNotBlank()) {
+            LabelledValue(label = "Notes", value = stop.notes)
+        }
+    }
+}
+
+
+// Label + value pair
+@Composable
+private fun LabelledValue(label: String, value: String) {
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Text(label, color = Color(0xFFB0B0B0), fontSize = 11.sp, fontWeight = FontWeight.Medium)
+        Text(value, color = Color.White, fontSize = 14.sp)
+    }
+}
+
+
+// Main screen
+@Composable
+fun TripDetailsScreen(
+    modifier: Modifier = Modifier,
+    tripId: String,
+    onBack: () -> Unit
+) {
+    var tripDetail by remember { mutableStateOf<TripDetail?>(null) }
+    var isLoading  by remember { mutableStateOf(true) }
+    var loadError  by remember { mutableStateOf<String?>(null) }
+
+    // Load trip + stops from Firestore when the screen opens
+    LaunchedEffect(tripId) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
+        android.util.Log.d("TripDetails", "Current UID: $uid")
+        try {
+            val uid = FirebaseAuth.getInstance().currentUser?.uid
+            if (uid == null) {
+                loadError = "Not signed in."
+                isLoading = false
+                return@LaunchedEffect
+            }
+
+            val db = FirebaseFirestore.getInstance()
+            val tripRef = db.collection("users").document(uid)
+                .collection("trips").document(tripId)
+
+            val tripSnap = tripRef.get().await()
+
+            val stopsSnap = tripRef.collection("stops")
+                .get()
+                .await()
+
+            val stops = stopsSnap.documents
+                .sortedBy { it.getLong("order") ?: 0L }
+                .map { doc ->
+                    TripStop(
+                        location = doc.getString("location") ?: "",
+                        transportation = doc.getString("transportation") ?: "",
+                        notes = doc.getString("notes") ?: ""
+                    )
+                }
+
+            tripDetail = TripDetail(
+                title = tripSnap.getString("title") ?: "Untitled Trip",
+                startingLocation = tripSnap.getString("startingLocation") ?: "",
+                destination = tripSnap.getString("destination") ?: "",
+                transportation = tripSnap.getString("transportation") ?: "",
+                notes = tripSnap.getString("notes") ?: "",
+                stops = stops
+            )
+        } catch (e: Exception) {
+            loadError = "Failed to load trip: ${e.localizedMessage}"
+        } finally {
+            isLoading = false
+        }
+    }
+
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(Color(0xFFE5E5EA)),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Top bar
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp, start = 12.dp, end = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Button(
+                onClick = onBack,
+                shape = CircleShape,
+                colors = ButtonDefaults.buttonColors(containerColor = NavyBlue)
+            ) { Text("Return") }
+
+            Button(
+                onClick = { /* TODO: navigate to edit screen */ },
+                shape = CircleShape,
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3A3A3C))
+            ) { Text("Edit") }
+        }
+
+        // Body
+        when {
+            isLoading -> {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = NavyBlue)
+                }
+            }
+
+            loadError != null -> {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(loadError ?: "", color = Color.Red, modifier = Modifier.padding(24.dp))
+                }
+            }
+
+            tripDetail != null -> {
+                val trip = tripDetail!!
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Spacer(Modifier.height(4.dp))
+
+                    // Page title
+                    Text(
+                        text = trip.title,
+                        color = NavyBlue,
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 2.dp)
+                    )
+
+                    // Trip overview card
+                    DetailCard {
+                        Text(
+                            "Overview",
+                            color = Color.White,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 15.sp
+                        )
+                        HorizontalDivider(color = Divider, thickness = 1.dp)
+
+                        if (trip.startingLocation.isNotBlank())
+                            LabelledValue("Starting Location", trip.startingLocation)
+                        if (trip.destination.isNotBlank())
+                            LabelledValue("Destination", trip.destination)
+                        if (trip.transportation.isNotBlank())
+                            LabelledValue("Transportation", trip.transportation)
+                        if (trip.notes.isNotBlank())
+                            LabelledValue("Notes", trip.notes)
+                    }
+
+                    // Stops
+                    if (trip.stops.isNotEmpty()) {
+                        Text(
+                            text = "Stops (${trip.stops.size})",
+                            color = NavyBlue,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            modifier = Modifier.padding(
+                                start = 16.dp, end = 16.dp, top = 8.dp, bottom = 2.dp
                             )
                         )
-                ) {
-                    Text(
-                        text = "Started in - London, UK",
-                        modifier = Modifier.padding(10.dp),
-                        color = Color.Black,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
 
-                Row() {
-                    Text("Traveled by Car to - Paris, France", Modifier.padding(10.dp), fontWeight = FontWeight.Bold)
-                }
-                Box(Modifier.padding(10.dp)) {
-                    Column() {
-                        Row {
-                            Text("Traveled 344 km", Modifier.padding(horizontal = 10.dp))
-                        }
-                        Row {
-                            Text("Visited - The Eifel Tower, the Louvre", Modifier.padding(horizontal = 10.dp))
-                        }
-                        Row {
-                            Text("Notes: Excellent food, tried Escargot for the first time!", Modifier.padding(horizontal = 10.dp))
+                        trip.stops.forEachIndexed { index, stop ->
+                            StopDetailCard(stopNumber = index + 1, stop = stop)
                         }
                     }
-                }
-                Row() {
-                    Text("Traveled by Plane to - Rome, Italy", Modifier.padding(10.dp), fontWeight = FontWeight.Bold)
-                }
-                Box(Modifier.padding(10.dp)) {
-                    Column() {
-                        Row {
-                            Text("Traveled 1422 km", Modifier.padding(horizontal = 10.dp))
-                        }
-                        Row {
-                            Text("Visited - The Coliseum, The Pantheon", Modifier.padding(horizontal = 10.dp))
-                        }
-                        Row {
-                            Text("Notes: Amassing scenery, must come back at some point.", Modifier.padding(horizontal = 10.dp))
-                        }
-                    }
-                }
-                Row() {
-                    Text("Return trip by Plane/car to - London, UK", Modifier.padding(10.dp), fontWeight = FontWeight.Bold)
-                }
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp)
-                        .background(
-                            color = Color(2, 38, 88),
-                            shape = RoundedCornerShape(10.dp)
-                        )
-                        .padding(12.dp)
-                ) {
-                    Text(
-                        text = "Total Distance Traveled:",
-                        color = Color.White
-                    )
+                    Spacer(Modifier.height(24.dp))
                 }
             }
         }
-
     }
 }
-/*
-fun travelCard() {
-    Row() {
-        Text("Traveled by __ to - __, __", Modifier.padding(10.dp))
-    }
 
-    Box(Modifier.padding(10.dp)) {
-        Column() {
-            Row {
-                Text("Traveled __ km", Modifier.padding(horizontal = 10.dp))
-            }
-            Row {
-                Text("Visited: ___", Modifier.padding(horizontal = 10.dp))
-            }
-            Row {
-                Text("Notes: ___", Modifier.padding(horizontal = 10.dp))
-            }
-        }
-    }
-
-}
-*/
 @Preview(showBackground = true)
 @Composable
 fun TripDetailsScreenPreview() {
-    TravelTrakerappTheme() {
+    TravelTrakerappTheme {
         TripDetailsScreen(tripId = "abcd", onBack = {})
     }
 }
