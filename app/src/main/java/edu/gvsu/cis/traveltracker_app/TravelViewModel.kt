@@ -1,4 +1,4 @@
-package edu.gvsu.cis.traveltraker_app
+package edu.gvsu.cis.traveltracker_app
 
 import android.app.Application
 import android.content.Context
@@ -19,7 +19,7 @@ import kotlinx.coroutines.tasks.await
 
 
 
-data class trip(
+data class tripContainer(
     val id: Int,
     val name: String,
     var points: List<savedLocation>
@@ -40,6 +40,12 @@ data class savedLocation(
     val lng: Double
 )
 
+// Represents a stop added during trip planning
+data class TripStop(
+    val location: String = "",
+    val transportation: String = "",
+    val notes: String = ""
+)
 
 
 // Address → LatLng (Forward Geocoding)
@@ -56,28 +62,29 @@ fun getAddressFromLatLng(context: Context, lat: Double, lng: Double): String? {
     val geocoder = Geocoder(context, Locale.getDefault())
     val results = geocoder.getFromLocation(lat, lng, 1)
     return if (!results.isNullOrEmpty()) {
-        results[0].getAddressLine(0) // Returns full address string
+        results[0].getAddressLine(0)
     } else null
 }
 
 
 class TravelViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val _trip = MutableStateFlow(trip(1, "My Trip", emptyList()))
+    private val _trip = MutableStateFlow(tripContainer(1, "My Trip", emptyList()))
     val currentTrip = _trip.asStateFlow()
 
     private val _locations = MutableStateFlow(listOf<savedLocation>())
     val locations = _locations.asStateFlow()
-    
+
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
-    
-     suspend fun createTrip(
+
+    suspend fun createTrip(
         title: String,
         startingLocation: String,
         destination: String,
         transportation: String,
-        notes: String
+        notes: String,
+        stops: List<TripStop> = emptyList()
     ): String? {
         return try {
             val uid = auth.currentUser?.uid ?: return null
@@ -90,12 +97,28 @@ class TravelViewModel(application: Application) : AndroidViewModel(application) 
                 notes = notes
             )
 
+            // Create the parent trip document
             val tripRef = db.collection("users")
                 .document(uid)
                 .collection("trips")
                 .document()
 
             tripRef.set(trip).await()
+
+            // Write each stop into a "stops" subcollection, ordered by index
+            stops.forEachIndexed { index, stop ->
+                val stopData = mapOf(
+                    "location"       to stop.location,
+                    "transportation" to stop.transportation,
+                    "notes"          to stop.notes,
+                    "order"          to index
+                )
+                tripRef.collection("stops")
+                    .document("stop_$index")
+                    .set(stopData)
+                    .await()
+            }
+
             tripRef.id
         } catch (e: Exception) {
             null
@@ -145,7 +168,7 @@ class TravelViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    fun updateTrip(newTrip: trip) {
+    fun updateTrip(newTrip: tripContainer) {
         _trip.update { newTrip }
         updateLocations()
     }

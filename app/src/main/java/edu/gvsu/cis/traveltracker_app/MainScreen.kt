@@ -36,8 +36,8 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.Polyline
 import androidx.compose.runtime.LaunchedEffect
-import edu.gvsu.cis.traveltraker_app.TravelViewModel
-import edu.gvsu.cis.traveltraker_app.savedLocation
+import edu.gvsu.cis.traveltracker_app.TravelViewModel
+import edu.gvsu.cis.traveltracker_app.savedLocation
 
 
 @Composable
@@ -58,26 +58,27 @@ fun MapScreen(locations: List<savedLocation> = emptyList()) {
                 snippet = location.address  // Shows address when marker is tapped
             )
         }
-
-        locations.zipWithNext { a, b ->
+        if (locations.isNotEmpty()) {
+            locations.zipWithNext { a, b ->
+                Polyline(
+                    points = listOf(LatLng(a.lat, a.lng), LatLng(b.lat, b.lng)),
+                    color = Color(2, 38, 88),
+                    width = 8f,
+                    geodesic = true
+                )
+            }
             Polyline(
-                points = listOf(LatLng(a.lat, a.lng), LatLng(b.lat, b.lng)),
+                points = listOf(
+                    LatLng(locations.first().lat, locations.first().lng),
+                    LatLng(locations.last().lat, locations.last().lng)
+                ),
                 color = Color(2, 38, 88),
                 width = 8f,
                 geodesic = true
             )
         }
-        Polyline(
-            points = listOf(LatLng(locations.first().lat, locations.first().lng),
-                            LatLng(locations.last().lat, locations.last().lng)),
-            color = Color(2, 38, 88),
-            width = 8f,
-            geodesic = true
-        )
-
     }
 }
-
 @Composable
 fun MainScreen(
     viewModel: TravelViewModel,
@@ -86,13 +87,14 @@ fun MainScreen(
     onOpenHistory: () -> Unit
 ) {
     val locations by viewModel.locations.collectAsState()
-
+    /*
     LaunchedEffect(Unit) {
         viewModel.addLocation(savedLocation("London", "London, UK", 51.5074, -0.1278))
         viewModel.addLocation(savedLocation("Rome", "Rome, Italy", 41.9028, 12.4964))
         viewModel.addLocationByAddress("Paris, France")
         viewModel.addLocationByCoords("Mystery", 40.0, 0.0)
-    }
+    }*/
+
     Box(modifier = Modifier.fillMaxSize()) {
         MapScreen(locations)
 
@@ -104,8 +106,7 @@ fun MainScreen(
                 .padding(16.dp),
             shape = CircleShape,
             contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(2, 38, 88))
+            colors = ButtonDefaults.buttonColors(containerColor = Color(2, 38, 88))
         ) {
             Text("Profile")
         }
@@ -126,9 +127,7 @@ fun MainScreen(
                 Button(
                     onClick = onOpenPlanTrip,
                     modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(2, 38, 88))
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(2, 38, 88))
                 ) {
                     Text("Plan Trip")
                 }
@@ -136,9 +135,7 @@ fun MainScreen(
                 Button(
                     onClick = onOpenHistory,
                     modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(2, 38, 88))
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(2, 38, 88))
                 ) {
                     Text("History")
                 }

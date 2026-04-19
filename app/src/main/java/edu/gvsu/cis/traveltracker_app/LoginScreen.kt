@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,38 +28,39 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.gvsu.cis.traveltracker_app.ui.theme.TravelTrakerappTheme
-import androidx.compose.material3.CircularProgressIndicator
 import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier, onCreateNewAccount: () -> Unit, onGuestLogin: () -> Unit, onLogin: () -> Unit, loginViewModel: LoginViewModel = viewModel()) {
-
+fun LoginScreen(
+    modifier: Modifier = Modifier,
+    onCreateNewAccount: () -> Unit,
+    onGuestLogin: () -> Unit,
+    onLogin: () -> Unit,
+    loginViewModel: LoginViewModel = viewModel()
+) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     val loginState by loginViewModel.loginState.collectAsState()
-
     val scope = rememberCoroutineScope()
 
-
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .background(color = Color.LightGray),
-
-        horizontalAlignment = Alignment.CenterHorizontally){
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color.LightGray),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(
             text = "Login",
-            modifier = modifier
-                .padding(top = 50.dp, bottom = 50.dp),
-            color = Color(2,38,88),
+            modifier = modifier.padding(top = 50.dp, bottom = 50.dp),
+            color = Color(2, 38, 88),
             fontSize = 30.sp,
             fontWeight = FontWeight.Bold
         )
 
-
         OutlinedTextField(
             value = email,
-            onValueChange = { email= it },
+            onValueChange = { email = it },
             label = { Text("Email") },
             singleLine = true,
             modifier = Modifier.padding(top = 30.dp)
@@ -86,6 +88,7 @@ fun LoginScreen(modifier: Modifier = Modifier, onCreateNewAccount: () -> Unit, o
             modifier = Modifier
                 .padding(top = 80.dp)
                 .clickable {
+                    loginViewModel.continueAsGuest()
                     onGuestLogin()
                 },
             color = Color(2, 38, 88),
@@ -96,9 +99,7 @@ fun LoginScreen(modifier: Modifier = Modifier, onCreateNewAccount: () -> Unit, o
             text = "Create new account",
             modifier = Modifier
                 .padding(top = 20.dp)
-                .clickable {
-                    onCreateNewAccount()
-                },
+                .clickable { onCreateNewAccount() },
             color = Color(2, 38, 88),
             fontWeight = FontWeight.Bold
         )
@@ -113,17 +114,13 @@ fun LoginScreen(modifier: Modifier = Modifier, onCreateNewAccount: () -> Unit, o
                         if (uid != null) onLogin()
                     }
                 },
-
                 modifier = Modifier
                     .fillMaxWidth(0.33f)
                     .padding(top = 80.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(2, 38, 88)
-                )
+                colors = ButtonDefaults.buttonColors(containerColor = Color(2, 38, 88))
             ) {
                 Text("Login")
             }
-
         }
     }
 }

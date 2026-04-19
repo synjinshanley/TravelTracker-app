@@ -13,16 +13,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import edu.gvsu.cis.traveltraker_app.TravelViewModel
+import com.google.firebase.Firebase
+import com.google.firebase.initialize
 
 class MainActivity : ComponentActivity() {
+    private val travelViewModel  by viewModels<TravelViewModel>()
+    private val loginViewModel   by viewModels<LoginViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        Firebase.initialize(this)
 
         setContent {
-            val viewModel by viewModels<TravelViewModel>()
             Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 
                 val nc = rememberNavController()
@@ -35,77 +38,67 @@ class MainActivity : ComponentActivity() {
 
                     composable<Route.Main> {
                         MainScreen(
-                            viewModel = viewModel,
-                            onOpenProfile = {
-                                nc.navigate(Route.Profile)
-                            },
-                            onOpenPlanTrip = {
-                                nc.navigate(Route.PlanTrip)
-                            },
-                            onOpenHistory = {
-                                nc.navigate(Route.History)
-                            }
+                            viewModel = travelViewModel,
+                            onOpenProfile = { nc.navigate(Route.Profile) },
+                            onOpenPlanTrip = { nc.navigate(Route.PlanTrip) },
+                            onOpenHistory = { nc.navigate(Route.History) }
                         )
                     }
 
                     composable<Route.PlanTrip> {
                         PlanTripScreen(
-                            viewModel = viewModel,
-                            onBack = {
-                                nc.popBackStack()
-                            }
+                            travelViewModel = travelViewModel,
+                            onBack = { nc.popBackStack() }
                         )
                     }
 
                     composable<Route.History> {
 
-                        val fakeTrips = listOf(
-                            TripUi("1", "Chicago Trip"),
-                            TripUi("2", "Spring Break Florida"),
-                            TripUi("3", "Traverse City Weekend")
-                        )
-
                         HistoryScreen(
-                            viewModel = viewModel,
-                            trips = fakeTrips,
+                            viewModel = travelViewModel,
                             onOpenTripDetails = { tripId ->
-                                val dest = Route.TripDetails(tripId)
-                                nc.navigate(dest)
+                                nc.navigate(Route.TripDetails(tripId))
                             },
-                            onBack = {
-                                nc.popBackStack()
-                            }
+                            onBack = { nc.popBackStack() }
                         )
                     }
 
                     composable<Route.TripDetails> {
-
                         val temp = it.toRoute<Route.TripDetails>()
-
                         TripDetailsScreen(
                             tripId = temp.tripID,
-                            onBack = {
-                                nc.popBackStack()
-                            }
+                            onBack = { nc.popBackStack() }
                         )
                     }
 
                     composable<Route.Profile> {
-                        ProfileScreen(onChangeProfile = {nc.navigate(Route.Login)}, onHome = {nc.popBackStack(route = Route.Main, inclusive = false)})
+                        ProfileScreen(
+                            loginViewModel = loginViewModel,
+                            onChangeProfile = { nc.navigate(Route.Login) },
+                            onHome = { nc.popBackStack(route = Route.Main, inclusive = false) },
+                            onSignOut  = {
+                                // Pop everything back to Login so the user must sign in again
+                                nc.navigate(Route.Login) {
+                                    popUpTo(Route.Main) { inclusive = true }
+                                }
+                            }
+                        )
                     }
 
                     composable<Route.CreateLogin> {
                         CreateLoginScreen(
-                            onCreateLogin = {nc.navigate(Route.Main)},
-                            onBack = {nc.popBackStack()}
+                            loginViewModel = loginViewModel,
+                            onCreateLogin = { nc.navigate(Route.Main) },
+                            onBack = { nc.popBackStack() }
                         )
                     }
 
                     composable<Route.Login> {
                         LoginScreen(
-                            onCreateNewAccount = {nc.navigate(Route.CreateLogin)},
-                            onGuestLogin = {nc.navigate(Route.Main)},
-                            onLogin = {nc.navigate(Route.Main)}
+                            loginViewModel = loginViewModel,
+                            onCreateNewAccount = { nc.navigate(Route.CreateLogin) },
+                            onGuestLogin = { nc.navigate(Route.Main) },
+                            onLogin = { nc.navigate(Route.Main) }
                         )
                     }
                 }
