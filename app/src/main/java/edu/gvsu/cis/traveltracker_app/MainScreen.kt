@@ -37,15 +37,23 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.Polyline
 import androidx.compose.runtime.LaunchedEffect
 import edu.gvsu.cis.traveltracker_app.TravelViewModel
-import edu.gvsu.cis.traveltracker_app.savedLocation
 
 
 @Composable
-fun MapScreen(locations: List<savedLocation> = emptyList()) {
+fun MapScreen(locations: List<TripStop>) {
     val defaultPosition = LatLng(51.5074, -0.1278)
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(defaultPosition, 5f)
     }
+    val tripColors = listOf(
+        Color(2, 38, 88),
+        Color(180, 30, 30),
+        Color(20, 120, 50),
+        Color(150, 80, 180),
+        Color(200, 120, 0)
+    )
+
+    fun colorForTrip(tripIndex: Int) = tripColors[tripIndex % tripColors.size]
 
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
@@ -53,29 +61,24 @@ fun MapScreen(locations: List<savedLocation> = emptyList()) {
     ) {
         locations.forEach { location ->
             Marker(
-                state = MarkerState(position = LatLng(location.lat, location.lng)),
-                title = location.name,
-                snippet = location.address  // Shows address when marker is tapped
+                state = MarkerState(position = LatLng(location.stopLatLng.latitude, location.stopLatLng.longitude)),
+                title = location.location,
+                snippet = location.notes.ifEmpty { location.transportation }
             )
         }
         if (locations.isNotEmpty()) {
-            locations.zipWithNext { a, b ->
-                Polyline(
-                    points = listOf(LatLng(a.lat, a.lng), LatLng(b.lat, b.lng)),
-                    color = Color(2, 38, 88),
-                    width = 8f,
-                    geodesic = true
-                )
+            // Group by tripIndex and draw each trip's route separately
+            locations.groupBy { it.tripIndex }.forEach { (tripIndex, tripStops) ->
+                val color = colorForTrip(tripIndex)
+                tripStops.zipWithNext { a, b ->
+                    Polyline(
+                        points = listOf(a.stopLatLng, b.stopLatLng),
+                        color = color,
+                        width = 8f,
+                        geodesic = true
+                    )
+                }
             }
-            Polyline(
-                points = listOf(
-                    LatLng(locations.first().lat, locations.first().lng),
-                    LatLng(locations.last().lat, locations.last().lng)
-                ),
-                color = Color(2, 38, 88),
-                width = 8f,
-                geodesic = true
-            )
         }
     }
 }
@@ -86,16 +89,15 @@ fun MainScreen(
     onOpenPlanTrip: () -> Unit,
     onOpenHistory: () -> Unit
 ) {
-    val locations by viewModel.locations.collectAsState()
-    /*
-    LaunchedEffect(Unit) {
-        viewModel.addLocation(savedLocation("London", "London, UK", 51.5074, -0.1278))
-        viewModel.addLocation(savedLocation("Rome", "Rome, Italy", 41.9028, 12.4964))
-        viewModel.addLocationByAddress("Paris, France")
-        viewModel.addLocationByCoords("Mystery", 40.0, 0.0)
-    }*/
+    val trips by viewModel.trips.collectAsState()
+    val locations by viewModel.allStops.collectAsState()
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    LaunchedEffect(Unit) {
+        viewModel.fetchTrips()
+        viewModel.loadAllStops()
+    }
+
+            Box(modifier = Modifier.fillMaxSize()) {
         MapScreen(locations)
 
         // Profile Button
