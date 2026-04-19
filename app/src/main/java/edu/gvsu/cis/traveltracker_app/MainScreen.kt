@@ -116,8 +116,8 @@ fun MainScreen(
         // Bottom bar
         Surface(
             modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth(),
+                .align(Alignment.BottomStart)
+                .fillMaxWidth(0.88f),
             color = Color.Transparent
         ) {
             Row(
