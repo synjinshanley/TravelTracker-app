@@ -67,7 +67,20 @@ class MainActivity : ComponentActivity() {
                         val temp = it.toRoute<Route.TripDetails>()
                         TripDetailsScreen(
                             tripId = temp.tripID,
-                            onBack = { nc.popBackStack() }
+                            onBack = { nc.popBackStack() },
+                            onEdit = { tripId ->
+                                nc.navigate(Route.TripEdit(tripId))
+                            }
+                        )
+                    }
+
+                    composable<Route.TripEdit> {
+                        val temp = it.toRoute<Route.TripEdit>()
+                        TripEditScreen(
+                            tripId = temp.tripID,
+                            travelViewModel = travelViewModel,
+                            onBack = { nc.popBackStack() },
+                            onSave = { nc.popBackStack() }
                         )
                     }
 

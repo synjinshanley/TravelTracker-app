@@ -27,4 +27,10 @@ sealed class Route {
     @Serializable
     data object Login{
     }
+
+    @Serializable
+    data class TripEdit(
+        val tripID: String
+    )
+
 }

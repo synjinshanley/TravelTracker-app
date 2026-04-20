@@ -8,11 +8,8 @@ import android.location.Geocoder
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Locale
-import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
@@ -205,6 +202,102 @@ class TravelViewModel(application: Application) : AndroidViewModel(application) 
             tripRef.id
         } catch (e: Exception) {
             null
+        }
+    }
+
+    // Get one trip and its stops for the edit screen
+    suspend fun getTrip(tripId: String): Pair<Trip, List<TripStop>>? {
+        return try {
+            val uid = auth.currentUser?.uid ?: return null
+
+            val tripRef = db.collection("users")
+                .document(uid)
+                .collection("trips")
+                .document(tripId)
+
+            val tripSnap = tripRef.get().await()
+            val trip = tripSnap.toObject(Trip::class.java) ?: Trip()
+
+            val stopsSnap = tripRef.collection("stops")
+                .get()
+                .await()
+
+            val stops = stopsSnap.documents
+                .sortedBy { it.getLong("order") ?: 0L }
+                .map { doc ->
+                    TripStop(
+                        location = doc.getString("location") ?: "",
+                        transportation = doc.getString("transportation") ?: "",
+                        notes = doc.getString("notes") ?: ""
+                    )
+                }
+
+            Pair(trip, stops)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    // Update an existing trip and replace its stops
+    suspend fun updateTrip(
+        tripId: String,
+        title: String,
+        startingLocation: String,
+        destination: String,
+        transportation: String,
+        notes: String,
+        stops: List<TripStop>
+    ): Boolean {
+        return try {
+            val uid = auth.currentUser?.uid ?: return false
+
+            val tripRef = db.collection("users")
+                .document(uid)
+                .collection("trips")
+                .document(tripId)
+
+            val tripData = mapOf(
+                "title" to title,
+                "startingLocation" to startingLocation,
+                "startingLocationLat" to addLocationByAddress(startingLocation)?.latitude,
+                "startingLocationLng" to addLocationByAddress(startingLocation)?.longitude,
+                "destination" to destination,
+                "destinationLat" to addLocationByAddress(destination)?.latitude,
+                "destinationLng" to addLocationByAddress(destination)?.longitude,
+                "transportation" to transportation,
+                "notes" to notes
+            )
+
+            tripRef.set(tripData).await()
+
+            // Delete old stops before saving the new edited ones
+            val oldStops = tripRef.collection("stops").get().await()
+            oldStops.documents.forEach { doc ->
+                doc.reference.delete().await()
+            }
+
+            // Save updated stops back in order
+            stops.forEachIndexed { index, stop ->
+                val latlong = addLocationByAddress(stop.location)
+                val stopData = mapOf(
+                    "location" to stop.location,
+                    "transportation" to stop.transportation,
+                    "notes" to stop.notes,
+                    "order" to index,
+                    "lat" to latlong?.latitude,
+                    "lng" to latlong?.longitude
+                )
+                tripRef.collection("stops")
+                    .document("stop_$index")
+                    .set(stopData)
+                    .await()
+            }
+
+            fetchTrips()
+            loadAllStops()
+            true
+        } catch (e: Exception) {
+            false
         }
     }
 
