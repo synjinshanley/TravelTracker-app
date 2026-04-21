@@ -1,9 +1,8 @@
 # Maps SDK tutorial
 
 ## Overview
-Maps SDK is an android library that gives the ability to use map API in 
-your application. Such features include map interaction, location markers, and polyline to connect
-points on the map.
+Maps SDK is an android library that gives the ability to use map API in your application. Such features include map interaction, location markers, and polylines to connect points on the map. With this demo, you can create Trips, which are connected with different stops with the location markers, and are visually connected with the polyline. Here are visuals of the different location markers we will implement. 
+
 
 ## Getting Started
 First, you will need to add the following lines to your Top-level build.gradle.kts plugins:
