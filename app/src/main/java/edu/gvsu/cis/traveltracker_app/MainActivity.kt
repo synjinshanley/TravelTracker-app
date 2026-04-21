@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.initialize
 
 class MainActivity : ComponentActivity() {
@@ -25,6 +26,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         Firebase.initialize(this)
 
+        val startDestination: Any =
+            if (FirebaseAuth.getInstance().currentUser != null) Route.Main
+            else Route.Login
+
         setContent {
             Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 
@@ -33,7 +38,7 @@ class MainActivity : ComponentActivity() {
                 NavHost(
                     modifier = Modifier.padding(innerPadding),
                     navController = nc,
-                    startDestination = Route.Main
+                    startDestination = startDestination
                 ) {
 
                     composable<Route.Main> {
@@ -67,7 +72,20 @@ class MainActivity : ComponentActivity() {
                         val temp = it.toRoute<Route.TripDetails>()
                         TripDetailsScreen(
                             tripId = temp.tripID,
-                            onBack = { nc.popBackStack() }
+                            onBack = { nc.popBackStack() },
+                            onEdit = { tripId ->
+                                nc.navigate(Route.TripEdit(tripId))
+                            }
+                        )
+                    }
+
+                    composable<Route.TripEdit> {
+                        val temp = it.toRoute<Route.TripEdit>()
+                        TripEditScreen(
+                            tripId = temp.tripID,
+                            travelViewModel = travelViewModel,
+                            onBack = { nc.popBackStack() },
+                            onSave = { nc.popBackStack() }
                         )
                     }
 
@@ -92,6 +110,7 @@ class MainActivity : ComponentActivity() {
                             onBack = { nc.popBackStack() }
                         )
                     }
+
 
                     composable<Route.Login> {
                         LoginScreen(

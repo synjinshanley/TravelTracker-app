@@ -135,7 +135,8 @@ private fun LabelledValue(label: String, value: String) {
 fun TripDetailsScreen(
     modifier: Modifier = Modifier,
     tripId: String,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onEdit: (String) -> Unit
 ) {
     var tripDetail by remember { mutableStateOf<TripDetail?>(null) }
     var isLoading  by remember { mutableStateOf(true) }
@@ -209,7 +210,7 @@ fun TripDetailsScreen(
             ) { Text("Return") }
 
             Button(
-                onClick = { /* TODO: navigate to edit screen */ },
+                onClick = { onEdit(tripId) },
                 shape = CircleShape,
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3A3A3C))
             ) { Text("Edit") }
@@ -295,6 +296,6 @@ fun TripDetailsScreen(
 @Composable
 fun TripDetailsScreenPreview() {
     TravelTrakerappTheme {
-        TripDetailsScreen(tripId = "abcd", onBack = {})
+        TripDetailsScreen(tripId = "abcd", onBack = {}, onEdit = {})
     }
 }
