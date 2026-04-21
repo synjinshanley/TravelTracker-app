@@ -41,10 +41,25 @@ import edu.gvsu.cis.traveltracker_app.TravelViewModel
 
 @Composable
 fun MapScreen(locations: List<TripStop>) {
-    val defaultPosition = LatLng(51.5074, -0.1278)
+    val mostRecentTrip = locations.groupBy { it.tripIndex }.maxByOrNull { it.key }
+    val mostRecentStop = mostRecentTrip?.value?.lastOrNull()
+    val defaultPosition = mostRecentStop?.let {
+        LatLng(it.stopLatLng.latitude, it.stopLatLng.longitude)
+    } ?: LatLng(51.5074, -0.1278)
+
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(defaultPosition, 5f)
     }
+
+    LaunchedEffect(mostRecentStop) {
+        if (mostRecentStop != null) {
+            cameraPositionState.position = CameraPosition.fromLatLngZoom(
+                LatLng(mostRecentStop.stopLatLng.latitude, mostRecentStop.stopLatLng.longitude),
+                5f
+            )
+        }
+    }
+
     val tripColors = listOf(
         Color(2, 38, 88),
         Color(180, 30, 30),

@@ -24,6 +24,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -336,8 +337,28 @@ fun PlanTripScreen(
                         saveError = "Please enter a starting location."
                         return@Button
                     }
-                    saveError = null
                     scope.launch {
+                        val startLatLng = travelViewModel.addLocationByAddress(startingLocation)
+                        val destLatLng = travelViewModel.addLocationByAddress(destination)
+
+                        if (startLatLng == null) {
+                            saveError = "Starting location not found, try to be more specific (City, State, Country)"
+                            return@launch
+                        }
+                        if (destLatLng == null) {
+                            saveError = "Destination not found, try to be more specific (City, State, Country)"
+                            return@launch
+                        }
+
+                        val invalidStop = stops.indexOfFirst { stop ->
+                            travelViewModel.addLocationByAddress(stop.location) == null
+                        }
+                        if (invalidStop != -1) {
+                            saveError = "Stop ${invalidStop + 1} location not found, try to be more specific"
+                            return@launch
+                        }
+
+                        saveError = null
                         val tripId = travelViewModel.createTrip(
                             title = title,
                             startingLocation = startingLocation,
