@@ -301,6 +301,31 @@ class TravelViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
+    // Delete a trip and its stops
+    suspend fun deleteTrip(tripId: String): Boolean {
+        return try {
+            val uid = auth.currentUser?.uid ?: return false
+
+            val tripRef = db.collection("users")
+                .document(uid)
+                .collection("trips")
+                .document(tripId)
+
+            val stopsSnapshot = tripRef.collection("stops").get().await()
+            stopsSnapshot.documents.forEach { doc ->
+                doc.reference.delete().await()
+            }
+
+            tripRef.delete().await()
+
+            fetchTrips()
+            loadAllStops()
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     suspend fun addLocationByAddress(address: String): LatLng? {
         return getLatLngFromAddress(getApplication(), address)
     }

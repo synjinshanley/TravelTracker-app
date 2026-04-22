@@ -24,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,9 +34,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import edu.gvsu.cis.traveltracker_app.ui.theme.TravelTrakerappTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import edu.gvsu.cis.traveltracker_app.ui.theme.TravelTrakerappTheme
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 // style variables
@@ -136,11 +138,16 @@ fun TripDetailsScreen(
     modifier: Modifier = Modifier,
     tripId: String,
     onBack: () -> Unit,
-    onEdit: (String) -> Unit
+    onEdit: (String) -> Unit,
+    onDelete: () -> Unit,
+    travelViewModel: TravelViewModel
 ) {
     var tripDetail by remember { mutableStateOf<TripDetail?>(null) }
     var isLoading  by remember { mutableStateOf(true) }
     var loadError  by remember { mutableStateOf<String?>(null) }
+    var deleteError by remember { mutableStateOf<String?>(null) }
+
+    val scope = rememberCoroutineScope()
 
     // Load trip + stops from Firestore when the screen opens
     LaunchedEffect(tripId) {
@@ -209,11 +216,28 @@ fun TripDetailsScreen(
                 colors = ButtonDefaults.buttonColors(containerColor = NavyBlue)
             ) { Text("Return") }
 
-            Button(
-                onClick = { onEdit(tripId) },
-                shape = CircleShape,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3A3A3C))
-            ) { Text("Edit") }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(
+                    onClick = { onEdit(tripId) },
+                    shape = CircleShape,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3A3A3C))
+                ) { Text("Edit") }
+
+                Button(
+                    onClick = {
+                        scope.launch {
+                            val success = travelViewModel.deleteTrip(tripId)
+                            if (success) {
+                                onDelete()
+                            } else {
+                                deleteError = "Failed to delete trip."
+                            }
+                        }
+                    },
+                    shape = CircleShape,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(180, 30, 30))
+                ) { Text("Delete") }
+            }
         }
 
         // Body
@@ -224,9 +248,13 @@ fun TripDetailsScreen(
                 }
             }
 
-            loadError != null -> {
+            loadError != null || deleteError != null -> {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(loadError ?: "", color = Color.Red, modifier = Modifier.padding(24.dp))
+                    Text(
+                        loadError ?: deleteError ?: "",
+                        color = Color.Red,
+                        modifier = Modifier.padding(24.dp)
+                    )
                 }
             }
 
@@ -292,10 +320,10 @@ fun TripDetailsScreen(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun TripDetailsScreenPreview() {
-    TravelTrakerappTheme {
-        TripDetailsScreen(tripId = "abcd", onBack = {}, onEdit = {})
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun TripDetailsScreenPreview() {
+//    TravelTrakerappTheme {
+//        TripDetailsScreen(tripId = "abcd", onBack = {}, onEdit = {})
+//    }
+//}

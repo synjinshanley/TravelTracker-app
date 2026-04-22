@@ -72,9 +72,15 @@ class MainActivity : ComponentActivity() {
                         val temp = it.toRoute<Route.TripDetails>()
                         TripDetailsScreen(
                             tripId = temp.tripID,
+                            travelViewModel = travelViewModel,
                             onBack = { nc.popBackStack() },
                             onEdit = { tripId ->
                                 nc.navigate(Route.TripEdit(tripId))
+                            },
+                            onDelete = {
+                                nc.navigate(Route.History) {
+                                    popUpTo(Route.TripDetails(temp.tripID)) { inclusive = true }
+                                }
                             }
                         )
                     }
