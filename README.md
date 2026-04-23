@@ -193,3 +193,5 @@ Running the app will now show the markers as well as the lines on the map
 
 
 ## See Also
+Set up API key:
+https://developers.google.com/maps/documentation/android-sdk/get-api-key

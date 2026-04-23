@@ -38,7 +38,8 @@ data class TripStop(
 
 
 // Address → LatLng (Forward Geocoding)
-fun getLatLngFromAddress(context: Context, address: String): LatLng? {
+fun getLatLngFromAddress(context: Context, address: String?): LatLng? {
+    if (address == null) { return null }
     val geocoder = Geocoder(context, Locale.getDefault())
     val results = geocoder.getFromLocationName(address, 1)
     return if (!results.isNullOrEmpty()) {
