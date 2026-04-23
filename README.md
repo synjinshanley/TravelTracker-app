@@ -182,11 +182,20 @@ Running the app will now show the markers as well as the lines on the map
 
 ![TrailandMarks.png](TrailandMarks.png)
 
-
-
-
-
-
+In your view model, you may want to add a function to return LatLng data when given an address. To 
+do so, add this function outside of your viewmodel:
+```kotlin
+fun getLatLngFromAddress(context: Context, address: String?): LatLng? {
+    if (address == null) { return null }
+    val geocoder = Geocoder(context, Locale.getDefault())
+    val results = geocoder.getFromLocationName(address, 1)
+    return if (!results.isNullOrEmpty()) {
+        LatLng(results[0].latitude, results[0].longitude)
+    } else null
+}
+```
+This will return a LatLng object if the provided address is valid, such as "London, UK" or "1 Campus 
+Dr, Allandale MI 49401". If the address is invalid or null, it will return null.
 
 
 ## Further Discussion and Conclusions
