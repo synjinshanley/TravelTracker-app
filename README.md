@@ -200,7 +200,26 @@ Dr, Allandale MI 49401". If the address is invalid or null, it will return null.
 
 ## Further Discussion and Conclusions
 
+In this tutorial, we implement the Maps SDK library into and android application. Whit this library,
+we are able to add an interactive map, place detailed markers, and connect these markers as a trail without
+connecting all markers. We also discussed how to convert string into LatLng data and implement into
+our application. Maps SDK is a convenient way for implementing native API into android applications.
+However, alternative map features are also available to implement into your such as
+Mapbox, HERE Technologies, and TomTom. Each give their own unique features for customization and accessibility.
+Our source code that uses Maps SDK can be found on this link https://github.com/synjinshanley/TravelTracker-app/tree/main
 
 ## See Also
 Set up API key:
 https://developers.google.com/maps/documentation/android-sdk/get-api-key
+
+Learn how to implement map features:
+https://developers.google.com/maps/documentation/android-sdk/map
+
+Mapbox:
+https://www.mapbox.com/
+
+Here Technologies:
+https://www.here.com/platform/geocoding
+
+TomTom:
+https://www.tomtom.com/
