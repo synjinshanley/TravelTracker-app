@@ -1,5 +1,16 @@
 # Maps SDK tutorial
 
+## Deliverables
+Video Presentation: 
+https://github.com/user-attachments/assets/225b7616-4300-428d-bb5d-e5b5f7e7c51c
+
+Google Slides:
+https://docs.google.com/presentation/d/11XCr4z0bKy36VVCYg71JKb6yKYFh-yDyKHWTJKKDcDw/edit?usp=sharing
+
+
+
+
+
 ## Overview
 Maps SDK is an android library that gives the ability to use map API in your application. Such 
 features include map interaction, location markers, and polylines to connect points on the map. 
