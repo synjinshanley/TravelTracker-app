@@ -1,9 +1,9 @@
 ## Deliverables
 Video Presentation:
-https://github.com/user-attachments/assets/225b7616-4300-428d-bb5d-e5b5f7e7c51c
+[https://github.com/user-attachments/assets/225b7616-4300-428d-bb5d-e5b5f7e7c51c](https://github.com/user-attachments/assets/225b7616-4300-428d-bb5d-e5b5f7e7c51c)
 
 Google Slides:
-https://docs.google.com/presentation/d/11XCr4z0bKy36VVCYg71JKb6yKYFh-yDyKHWTJKKDcDw/edit?usp=sharing
+[https://docs.google.com/presentation/d/11XCr4z0bKy36VVCYg71JKb6yKYFh-yDyKHWTJKKDcDw/edit?usp=sharing](https://docs.google.com/presentation/d/11XCr4z0bKy36VVCYg71JKb6yKYFh-yDyKHWTJKKDcDw/edit?usp=sharing)
 
 # Maps SDK tutorial
 
@@ -217,16 +217,16 @@ Our source code that uses Maps SDK can be found on this link https://github.com/
 
 ## See Also
 Set up API key:
-https://developers.google.com/maps/documentation/android-sdk/get-api-key
+[https://developers.google.com/maps/documentation/android-sdk/get-api-key](https://developers.google.com/maps/documentation/android-sdk/get-api-key)
 
 Learn how to implement map features:
-https://developers.google.com/maps/documentation/android-sdk/map
+[https://developers.google.com/maps/documentation/android-sdk/map](https://developers.google.com/maps/documentation/android-sdk/map)
 
 Mapbox:
-https://www.mapbox.com/
+[https://www.mapbox.com/](https://www.mapbox.com/)
 
 Here Technologies:
-https://www.here.com/platform/geocoding
+[https://www.here.com/platform/geocoding](https://www.here.com/platform/geocoding)
 
 TomTom:
-https://www.tomtom.com/
+[https://www.tomtom.com/](https://www.tomtom.com/)
