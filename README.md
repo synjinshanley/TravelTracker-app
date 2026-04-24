@@ -1,3 +1,10 @@
+## Deliverables
+Video Presentation:
+https://github.com/user-attachments/assets/225b7616-4300-428d-bb5d-e5b5f7e7c51c
+
+Google Slides:
+https://docs.google.com/presentation/d/11XCr4z0bKy36VVCYg71JKb6yKYFh-yDyKHWTJKKDcDw/edit?usp=sharing
+
 # Maps SDK tutorial
 
 ## Overview
