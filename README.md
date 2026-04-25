@@ -105,7 +105,7 @@ fun MainScreen() {
 }
 ```
 
-try running the app, you should be able to see the map on the screen. make sure the map UI is formated
+Try running the app, you should be able to see the map on the screen. Make sure the map UI is formated
 the way that best suits your needs.
 
 ![Map.png](Map.png)
@@ -207,13 +207,13 @@ Dr, Allandale MI 49401". If the address is invalid or null, it will return null.
 
 ## Further Discussion and Conclusions
 
-In this tutorial, we implement the Maps SDK library into and android application. Whit this library,
+In this tutorial, we implement the Maps SDK library into and android application. With this library,
 we are able to add an interactive map, place detailed markers, and connect these markers as a trail without
 connecting all markers. We also discussed how to convert string into LatLng data and implement into
 our application. Maps SDK is a convenient way for implementing native API into android applications.
-However, alternative map features are also available to implement into your such as
+However, alternative map features are also available to implement into your application such as
 Mapbox, HERE Technologies, and TomTom. Each give their own unique features for customization and accessibility.
-Our source code that uses Maps SDK can be found on this link https://github.com/synjinshanley/TravelTracker-app/tree/main
+Our source code that uses Maps SDK can be found on this link [https://github.com/synjinshanley/TravelTracker-app/tree/main](https://github.com/synjinshanley/TravelTracker-app/tree/main)
 
 ## See Also
 Set up API key:
